@@ -1,0 +1,66 @@
+const {PrismaClient}=require('@prisma/client');
+const bcrypt= require('bcrypt');
+const prisma= new PrismaClient();
+
+const SALT_ROUNDS= 10;
+
+async function main(){
+    console.log('Starting database seeding sequence...');
+
+    await prisma.orderItem.deleteMany({});
+    await prisma.order.deleteMany({});
+    await prisma.product.deleteMany({});
+    await prisma.user.deleteMany({});
+    console.log('Existing user tables cleared');
+
+    const hashedAdminPassword= await bcrypt.hash(process.env.ADMIN_PASSWORD, SALT_ROUNDS);
+    const hashedUserPassword= await bcrypt.hash(process.env.TEST_USER_PASSWORD, SALT_ROUNDS)
+
+    const user1=await prisma.user.create({
+        data:{
+            email:process.env.ADMIN_EMAIL,
+            password:hashedAdminPassword,
+            name: 'Admin Tester',
+            age: 17,
+            gender: 'FEMALE',
+            role: 'ADMIN'
+        },
+    });
+
+    const user2 = await prisma.user.create({
+        data:{
+            email:process.env.TEST_USER_EMAIL,
+            password:hashedUserPassword,
+            name: 'Tester_name',
+            age: 16,
+            gender: 'FEMALE',
+            role: 'USER'
+        },
+    });
+
+    console.log('Database successfully seeded. Created users:')
+    console.log(` - ${user1.email} (${user1.name})`);
+    console.log(`  - ${user2.email} (${user2.name})`)
+
+    await prisma.product.deleteMany({});
+    console.log('Existing product tables cleared');
+
+    const products=await prisma.product.createMany({
+        data: [
+            {name: 'Black Iphone 17', description:'High Quality', price: 800, discount:0, stock:15, category:'Iphones', image:'/assets/products/blackIphone17.jpg'},
+            /*The other pics are for the admins to add*/
+        ]
+    });
+
+    console.log(`Database successfully seeded with ${products.count} products.`)
+}
+
+main()
+    .catch((error)=>{
+        console.error(`Critical error encountered during database seed:`, error);
+        process.exit(1);
+    })
+    .finally(async()=>{
+        await prisma.$disconnect();
+        console.log('Prisma database client connection closed safely')
+    })
