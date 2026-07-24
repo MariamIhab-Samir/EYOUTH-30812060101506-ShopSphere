@@ -106,3 +106,5 @@ Frontend Client Workspace: http://localhost:3000
 Backend Core Live API: http://localhost:5000
 
 Health Check Monitoring Route: http://localhost:5000/health
+
+"This is an edit to my file on friday 24th of july, please add double quotes to my project in the env around the name of my db in the DATABASE_URL since it won't work that way and i hadn't noticed that earlier"
