@@ -20,7 +20,10 @@ email String @unique
 age Int
 gender String
 Orders Order[]
+CartItems CartItem[]
 role String @default("USER")
+CouponRedemptions CouponRedemption[]
+Notifications Notification[]
 }
 model Product {
 id Int @id @default(autoincrement())
@@ -32,6 +35,8 @@ stock Int
 category String @default("General")
 image String?
 orderTimes OrderItem[]
+reservedIn CartItem[]
+notifiedIn Notification[]
 }
 model Order {
 id Int @id @default(autoincrement())
@@ -49,4 +54,45 @@ order Order @relation(fields: [orderId], references: [id])
 productId Int
 product Product @relation(fields: [productId], references: [id])
 quantity Int
+}
+model CartItem {
+  id Int @id@default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  productId Int
+  product Product @relation(fields: [productId], references: [id])
+  quantity Int
+  reservedAt DateTime @default(now())
+  @@unique([userId, productId])
+}
+model Coupon {
+  id Int @id @default(autoincrement())
+  code String @unique
+  discountPercent Int @default(10)
+  expiresAt DateTime
+  stock Int
+  redemptions CouponRedemption[]
+}
+model CouponRedemption{
+  id Int @id @default(autoincrement())
+  userId Int
+  couponId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  redeemedAt DateTime @default(now())
+  @@unique([userId, couponId])
+}
+model Notification{
+  id Int @id @default(autoincrement())
+  userId Int
+  productId Int
+  type String
+  emailedAt DateTime?
+  createdAt DateTime @default(now())
+  read Boolean @default(false)
+
+  user User @relation(fields: [userId], references:[id])
+  product Product @relation(fields: [productId], references:[id], onDelete: Cascade)
+
+  @@unique([userId, productId])
 }

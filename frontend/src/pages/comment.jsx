@@ -24,7 +24,7 @@ function StarPicker({rating, onChange}){
     );
 };
 
-export default function ProductComments(/*{productId, productName, onBack}*/){
+export default function ProductComments(){
     const{productId: productIdParam}=useParams();
     const productId=parseInt(productIdParam, 10);
     const navigate=useNavigate();

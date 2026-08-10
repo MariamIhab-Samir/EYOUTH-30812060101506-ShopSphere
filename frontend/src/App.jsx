@@ -12,6 +12,7 @@ import ProductDetails from './pages/productDetails';
 import {CartProvider} from './context/cartContext';
 import Profile from './pages/profile';
 import {AuthProvider} from './context/authContext';
+import Coupons from './components/couponToggle';
 
 const queryClient=new QueryClient();
 
@@ -33,6 +34,7 @@ export default function App(){
                                 <Route path='/orderHistory' element={<OrderHistory />}></Route>
                                 <Route path='/productDetails/:productId' element={<ProductDetails />}></Route>
                                 <Route path='/profile' element={<Profile />}></Route>
+                                <Route path='/coupons' element={<Coupons />}></Route>
                             </Routes>
                         </div>
                     </CartProvider>

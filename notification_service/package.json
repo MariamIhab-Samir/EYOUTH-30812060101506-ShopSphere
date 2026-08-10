@@ -1,0 +1,33 @@
+{
+  "name": "notification_service",
+  "version": "1.0.0",
+  "description": "Notification microservice",
+  "main": "app.js",
+  "type": "commonjs",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^9.0.3",
+    "prisma": "^5.22.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "liscense": "ISC"
+}

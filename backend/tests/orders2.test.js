@@ -16,6 +16,7 @@ let buyerId, productId, cartId;
 describe('POST /api/orders - Integration', ()=>{
     beforeEach(async()=>{
         await prisma.orderItem.deleteMany({});
+        await prisma.cartItem.deleteMany({});
         await prisma.product.deleteMany({});
         await prisma.order.deleteMany({});
         await prisma.user.deleteMany({where: {email: BUYER_EMAIL}});
@@ -44,7 +45,11 @@ describe('POST /api/orders - Integration', ()=>{
 
         productId=product.id;
 
-        
+        await prisma.cartItem.create({
+            data:{
+                userId:buyerId, productId, quantity:2
+            }
+        });
         jwt.verify.mockImplementation((token)=>{
             if(token==='MOCK_USER_TOKEN'){
                 return{
@@ -59,15 +64,24 @@ describe('POST /api/orders - Integration', ()=>{
         await mongoose.connection.close();
     });
 
-    it('places a real order and decrements real product stock', async()=>{
+    it('places a real order from an existing cart reservation and clears the cart', async()=>{
+
+        await prisma.product.update({
+            where:{id:productId},
+            data:{stock:{decrement:2}}
+        });
+
         const res=await request(app)
             .post('/api/auth/orders')
             .set('Authorization', 'Bearer MOCK_USER_TOKEN')
-            .send({items:[{productId, quantity:2}]});
+            .send({});
 
         expect(res.status).toBe(201);
 
         const updatedProduct=await prisma.product.findUnique({where:{id:productId}});
         expect(updatedProduct.stock).toBe(3);
+
+        const remainingCartItems=await prisma.cartItem.findMany({where:{userId:buyerId}});
+        expect(remainingCartItems.length).toBe(0);
     });
 })

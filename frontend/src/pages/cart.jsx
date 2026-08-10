@@ -1,96 +1,131 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useQueryClient} from '@tanstack/react-query';
+import api from '../api/axios';
 import {useCart} from '../context/cartContext';
 import PageLayout from '../components/pageLayout';
+import Coupon from '../components/coupon'
 
 export default function Cart({}){
     const navigate=useNavigate();
+    const queryClient=useQueryClient();
+    const [errorMessage, setErrorMessage]=useState('');
+    const [loading, setLoading]=useState(false);
+    const [appliedCoupon, setAppliedCoupon]=useState(null);
     const{cartItems, updateQuantity, removeItem, totalCost, clearCart}=useCart();
-    const handleCheckout=()=>{
-        if(cartItems.length===0) return;
+    const discountedTotal=appliedCoupon
+        ? (totalCost*(1-appliedCoupon.discount/100)) : totalCost;
+    const handleCheckout=async()=>{
+        if(cartItems.length===0){
+            setErrorMessage('Cannot checkout an empty cart. Please add items to your cart before proceeding to checkout.');
+            setTimeout(()=> setErrorMessage(''), 3000);
+            return;
+        }
+        setLoading(true);
 
-        const rawHistory=localStorage.getItem('order_history');
-        const existingHistory=rawHistory?JSON.parse(rawHistory): [];
+        try{
+            const itemsToStore=cartItems.map(item=>({
+                productId:item.id,
+                quantity:item.quantity || 1
+            }));
+        
 
-        const totalItemsCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-        const newOrder ={
-            orderHash:`ORD-${Date.now().toString().slice(-6)}`,
-            orderId: `ORD-${Date.now()}`,
-            timestamp: new Date().toISOString(),
-            itemCount: totalItemsCount,
-            items: cartItems,
-            total: totalCost,
-            status: 'Success'
-        };
+        await api.post('/orders', {items: itemsToStore, couponCode:appliedCoupon?.code});
 
-        const updatedHistory=[newOrder, ...existingHistory];
-
-        localStorage.setItem('order_history', JSON.stringify([...existingHistory, newOrder]));
+        queryClient.invalidateQueries({queryKey:['products']});
+        queryClient.invalidateQueries({queryKey:['orders']});
         clearCart();
-
-        navigate('/orderHistory')
+        navigate('/orderHistory');
+    }catch(err){
+        setErrorMessage(err.response?.data?.error || 'An error occurred while processing your order. Please try again later.');
+        setTimeout(()=> setErrorMessage(''), 3000);
+    }finally{
+        setLoading(false);
     }
+}
     return(
         <PageLayout>
-        <div style={cartStyles.container}>
-            <h2 style={cartStyles.title}>🛒 Active Session Cart</h2>
-            <button
-            onClick={()=> navigate('/home')}
-            style={cartStyles.continueBtn}>
-                + Add More Items
-            </button>
-
-            {cartItems.length === 0 ? (
-                <p style={cartStyles.emptyMsg}>Your cart is currently empty. Allocate items from the catalog</p>
-            ):(
-                <div>
-                    <div style={cartStyles.tableWrapper}>
-                        {cartItems.map((item)=>(
-                            <div key={item.id} style={cartStyles.row}>
-                                <div style={cartStyles.infoCol}>
-                                    <span style={cartStyles.itemName}>{item.name}</span>
-                                    <span style={cartStyles.itemPrice}>${item.price}</span>
-                                </div>
-                            <div style={cartStyles.controlCol}>
-                                <div style={cartStyles.qtyStepper}>
-                                    <button
-                                        onClick={()=> updateQuantity(item.id, (item.quantity || 1) -1)}
-                                        disabled={(item.quantity || 1)<=1}
-                                        style={cartStyles.qtyBtn}>
-                                            -
-                                    </button>
-                                    <span style={cartStyles.qtyDisplay}>{item.quantity || 1}</span>
-                                    <button
-                                    onClick={()=> updateQuantity(item.id, (item.quantity || 1) + 1)}
-                                    style={cartStyles.qtyBtn}>
-                                        +
-                                    </button>
-                                </div>
-                            <button
-                                onClick={()=> removeItem(item.id)}
-                                style={cartStyles.binBtn}
-                                title='Purge item from session'
-                            >
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                ))}
-        </div>
-
-        <div style={cartStyles.summaryPanel}>
-            <div style={cartStyles.totalRow}>
-                <span>System Subtotal:</span>
-                <span style={cartStyles.totalPrice}>${totalCost}</span>
-            </div>
-            <button
-                onClick={handleCheckout} style={cartStyles.checkoutBtn}>
-                    Confirm order and Log History
+            <div style={cartStyles.container}>
+                <h2 style={cartStyles.title}>🛒 Active Session Cart</h2>
+                {errorMessage && <p style={{color:'red', marginBottom:'12px'}}>{errorMessage}</p>}
+                <button
+                onClick={()=> navigate('/home')}
+                style={cartStyles.continueBtn}>
+                    + Add More Items
                 </button>
+                {cartItems.length === 0 ? (
+                    <p style={cartStyles.emptyMsg}>Your cart is currently empty. Allocate items from the catalog</p>
+                ):(
+                    <div>
+                        <div style={cartStyles.tableWrapper}>
+                            {cartItems.map((item)=>(
+                                <div key={item.cartItemId} style={cartStyles.row}>
+                                    <div style={cartStyles.infoCol}>
+                                        <span style={cartStyles.itemName}>{item.name}</span>
+                                        <span style={cartStyles.itemPrice}>${item.price}</span>
+                                    </div>
+                                <div style={cartStyles.controlCol}>
+                                    <div style={cartStyles.qtyStepper}>
+                                        <button
+                                            onClick={async()=> {
+                                                const result=await updateQuantity(item.cartItemId, (item.quantity || 1) -1)
+                                                if(!result.success) alert(result.message);}}
+                                            disabled={(item.quantity || 1)<=1}
+                                            style={cartStyles.qtyBtn}>
+                                                -
+                                        </button>
+                                        <span style={cartStyles.qtyDisplay}>{item.quantity || 1}</span>
+                                        <button
+                                        onClick={async()=> {
+                                            const result=await updateQuantity(item.cartItemId, (item.quantity || 1) + 1);
+                                            if(!result.success) alert(result.message);
+                                        }}
+                                        style={cartStyles.qtyBtn}>
+                                            +
+                                        </button>
+                                    </div>
+                                <button
+                                    onClick={async()=> {
+                                        const result= await removeItem(item.cartItemId);
+                                        if(!result.success) alert(result.message);
+                                    }}
+                                    style={cartStyles.binBtn}
+                                    title='Purge item from session'
+                                >
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    ))}
             </div>
-        </div>
-            )}
-        </div>
+
+            <div style={cartStyles.summaryPanel}>
+                <div style={cartStyles.totalRow}>
+                    <span>System Subtotal:</span>
+                    <span style={cartStyles.totalPrice}>
+                        {appliedCoupon ? (
+                            <>
+                            <span style={{textDecoration:'line-through', opacity:0.5, marginRight:'8px'}}>
+                                ${totalCost}
+                            </span>
+                            ${discountedTotal}
+                            </>
+                        ):(
+                            `$${totalCost}`
+                        )}
+                    </span>
+                </div>
+                <Coupon onApply={setAppliedCoupon}></Coupon>
+                <button
+                    onClick={handleCheckout}
+                    disabled={loading}
+                    style={{...cartStyles.checkoutBtn, opacity: loading? 0.6:1}}>
+                        {loading ? 'Processing Order...': 'Confirm Order & Log History'}
+                    </button>
+                </div>
+            </div>
+                )}
+            </div>
         </PageLayout>
     );
 };

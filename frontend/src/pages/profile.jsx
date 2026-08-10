@@ -148,7 +148,7 @@ const styles={
         borderRadius: '8px',
         width: '100%',
         maxWidth: '450px',
-        boxShadow: 'O 4px 15px rgba(112, 43, 109, 0.3)'
+        boxShadow: '0 4px 15px rgba(112, 43, 109, 0.3)'
     },
     title:{
         color: '#6d5050',

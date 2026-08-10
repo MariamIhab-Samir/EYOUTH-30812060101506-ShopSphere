@@ -9,6 +9,8 @@ async function fetchProducts(){
 export function useProducts(){
     return useQuery({
         queryKey: ['products'],
-        queryFn: fetchProducts
+        queryFn: fetchProducts,
+        refetchInterval: 2000,
+        refetchIntervalInBackground: false
     });
 }

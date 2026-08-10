@@ -12,9 +12,9 @@ jest.mock('@prisma/client', () => {
     };
 });
 
-jest.mock('../config/commentModal', ()=>({
-    find: jest.fn().mockResolvedValue([])
-}))
+jest.mock('../util/mailer', ()=>({
+    sendEmail: jest.fn().mockResolvedValue({})
+}));
 
 jest.mock('../config/activityLog', ()=>({
     create: jest.fn().mockResolvedValue([])
@@ -25,12 +25,16 @@ const prisma = require('@prisma/client');
 const activityLogModal=require('../config/activityLog');
 
 const { PrismaClient } = require('@prisma/client');
+const mongoose = require('mongoose');
 
 describe('GET /api/products - Product Listing System', () => {
 
     beforeEach(() => {
         mockFindMany.mockReset();
+    });
 
+    afterAll(async () => {
+        await mongoose.connection.close();
     });
 
     it('should fetch and return a list of all products with 200 status', async () => {

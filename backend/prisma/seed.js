@@ -9,13 +9,27 @@ async function main(){
 
     await prisma.orderItem.deleteMany({});
     await prisma.order.deleteMany({});
+    await prisma.cartItem.deleteMany({});
     await prisma.product.deleteMany({});
+    await prisma.couponRedemption.deleteMany({});
     await prisma.user.deleteMany({});
+    await prisma.coupon.deleteMany({});
+    await prisma.notification.deleteMany({});
     console.log('Existing user tables cleared');
 
     const hashedAdminPassword= await bcrypt.hash(process.env.ADMIN_PASSWORD, SALT_ROUNDS);
     const hashedUserPassword= await bcrypt.hash(process.env.TEST_USER_PASSWORD, SALT_ROUNDS)
 
+    const coupons=await prisma.coupon.createMany({
+        data:[
+            {code:'A161220080', discountPercent: 10, expiresAt: new Date('2027-08-04'), stock:30},
+            {code:'B261220080', discountPercent: 20, expiresAt: new Date('2027-08-04'), stock:25},
+            {code:'C361220080', discountPercent: 30, expiresAt: new Date('2027-08-04'), stock:20},
+            {code:'D461220080', discountPercent: 40, expiresAt: new Date('2027-08-04'), stock:15},
+            {code:'E561220080', discountPercent: 50, expiresAt: new Date('2027-08-04'), stock:10}
+        ]
+    })
+    console.log('Coupons seeded')
     const user1=await prisma.user.create({
         data:{
             email:process.env.ADMIN_EMAIL,

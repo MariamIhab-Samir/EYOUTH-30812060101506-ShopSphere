@@ -15,7 +15,7 @@ const getUserOrders = async (req, res) => {
                 }
             },
             orderBy: {
-                createdAt: 'asc' 
+                createdAt: 'desc' 
             }
         });
 

@@ -1,12 +1,23 @@
 import React from 'react';
 import PageLayout from '../components/pageLayout';
+import {useOrders} from '../hooks/useOrders';
 
-export default function OrderHistory({orders: dynamicOrders}){
-    const orders = dynamicOrders || (() => {
-        const localData= localStorage.getItem('order_history');
-        return localData ? JSON.parse(localData) : [];
-    })();
+export default function OrderHistory({}){
+    const {data:orders=[], isLoading, isError}=useOrders();
+    if (isLoading){
+        return(
+            <PageLayout><div style={historyStyles.container}>
+                <p style={historyStyles.emptyMsg}>Loading order History</p>
+            </div></PageLayout>
+        );
+    }
 
+    if (isError){
+        return(
+            <PageLayout><div style={historyStyles.container}></div>
+            <p style={historyStyles.emptyMsg}>Unable to load order history</p></PageLayout>
+        );
+    }
     if(orders.length ===0){
         return(
             <PageLayout>
@@ -21,56 +32,71 @@ export default function OrderHistory({orders: dynamicOrders}){
         }
             return(
                 <PageLayout>
-                <div style={historyStyles.container}>
-                <h2 style={historyStyles.title}>Historical Transaction Logs</h2>
-                <div style={historyStyles.tableWrapper}>
-                    <div style={historyStyles.tableHeader}>
-                        <div style={historyStyles.hashCol}>Id</div>
-                        <div style={historyStyles.timestampCol}>Time</div>
-                        <div style={historyStyles.priceCol}>Price</div>
-                        <div style={historyStyles.statusCol}>Status</div>
-                    </div>
-                    {orders.map((order)=>(
-                        <div key={order.id || order.orderId || order.timestamp} style={historyStyles.orderCard}>
-                        <div key={order.id} style={historyStyles.tableRow}>
-                            <div style={historyStyles.hashCol}>
-                                #{order.orderHash}
-                            </div>
-                            <div style={historyStyles.timestampCol}>
-                                {order.timestamp}
-                            </div>
-                            <div style={historyStyles.priceCol}>
-                                ${order.total}
-                            </div>
-                            <div style={historyStyles.statusCol}>
-                                <span style={{
-                                    ...historyStyles.statusBadge,
-                                    backgroundColor:order.status === 'Dispatched' ? '#065f46':'#7d563d',
-                                    color:order.status === 'Dispatched' ? '#1e352c':'#534523'
-                                }}>
-                                    {order.status}
-                                </span>
-                            </div>
+                    <div style={historyStyles.container}>
+                    <h2 style={historyStyles.title}>Historical Transaction Logs</h2>
+                    <div style={historyStyles.tableWrapper}>
+                        <div style={historyStyles.tableHeader}>
+                            <div style={historyStyles.hashCol}>Id</div>
+                            <div style={historyStyles.timestampCol}>Time</div>
+                            <div style={historyStyles.priceCol}>Subtotal</div>
+                            <div style={historyStyles.priceCol}>Discount</div>
+                            <div style={historyStyles.priceCol}>Total</div>
+                            <div style={historyStyles.statusCol}>Status</div>
                         </div>
-
-                        {order.items && order.items.length > 0 && (
-                            <div style={historyStyles.itemsBreakdown}>
-                                <div style={historyStyles.breakdownTitle}> Item Manifesto Breakdown:</div>
-                                {order.items.map((item,idx) =>(
-                                    <div key={item.id || idx} style={historyStyles.itemDetailLine}>
-                                        <span style={historyStyles.detailName}> 🟢 {item.name}</span>
-                                        <span style={historyStyles.detailQtyPrice}>
-                                            {item.quantity || 1} x ${item.price}
-                                            <span style={{color: '#64748b'}}>(${(item.quantity||1)*item.price})</span>
-                                        </span>
-                                    </div>
-                                ))}
+                        {orders.map((order)=>{
+                            const subtotal=order.items.reduce((sum, item)=> sum + item.product.price*item.quantity, 0);
+                            const total=Number(order.totalPrice);
+                            const discount=subtotal-total;
+                            const discountPercent=subtotal>0?Math.round((discount/subtotal)*100):0;
+                            return(
+                            <div key={order.id || order.orderId || order.timestamp} style={historyStyles.orderCard}>
+                            <div key={order.id} style={historyStyles.tableRow}>
+                                <div style={historyStyles.hashCol}>
+                                    #{order.id}
+                                </div>
+                                <div style={historyStyles.timestampCol}>
+                                    {new Date(order.createdAt).toLocaleString()}
+                                </div>
+                                <div style={historyStyles.priceCol}>
+                                    ${subtotal.toFixed(2)}
+                                </div>
+                                <div style={historyStyles.priceCol}>
+                                    {discount>0? `-$${discount.toFixed(2)}
+                                    (${discountPercent}%)`:'———'}
+                                </div>
+                                <div style={historyStyles.priceCol}>
+                                    ${total.toFixed(2)}
+                                </div>
+                                <div style={historyStyles.statusCol}>
+                                    <span style={{
+                                        ...historyStyles.statusBadge,
+                                        backgroundColor:order.status === 'SUCCESS' ? '#065f46':'#7d563d',
+                                        color:order.status === 'SUCCESS' ? '#1e352c':'#534523'
+                                    }}>
+                                        {order.status}
+                                    </span>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                ))}
+
+                            {order.items && order.items.length > 0 && (
+                                <div style={historyStyles.itemsBreakdown}>
+                                    <div style={historyStyles.breakdownTitle}> Item Manifesto Breakdown:</div>
+                                    {order.items.map((item) =>(
+                                        <div key={item.id} style={historyStyles.itemDetailLine}>
+                                            <span style={historyStyles.detailName}> 🟢 {item.product.name}</span>
+                                            <span style={historyStyles.detailQtyPrice}>
+                                                {item.quantity} x ${item.product.price}
+                                                <span style={{color: '#64748b'}}>(${(item.quantity*item.product.price)})</span>
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
         </div>
-    </div>
     </PageLayout>
     )
 };
@@ -124,7 +150,7 @@ const historyStyles={
         transition: 'transform 0.2s'
     },
     hashCol:{
-        flex:2,
+        flex:1,
         fontFamily:'monospace',
         color:'#978161',
         fontsize:'13px'
@@ -143,7 +169,9 @@ const historyStyles={
     },
     statusCol:{
         flex:1,
-        textAlign:'right'
+        fontFamily:'monospace',
+        color:'#978161',
+        fontsize:'13px'
     },
     statusBadge:{
         padding:'4px 10px',

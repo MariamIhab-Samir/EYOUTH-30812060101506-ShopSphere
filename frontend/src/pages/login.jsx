@@ -15,7 +15,6 @@ export default function Login(){
 
     const [error, setError] = useState('');
     const[success, setSuccess]= useState('');
-    /*const[loading, setLoading]= useState(false);*/
     const {login}=useAuth();
     const loginMutation=useLogin();
 
@@ -143,7 +142,7 @@ const styles = {
         borderRadius: '8px',
         width: '100%',
         maxWidth: '450px',
-        boxShadow: 'O 4px 15px rgba(112, 43, 109, 0.3)'
+        boxShadow: '0 4px 15px rgba(112, 43, 109, 0.3)'
     },
     title:{
         color: '#5c298b',
@@ -157,7 +156,7 @@ const styles = {
         backgroundColor:'#3b2554',
         borderRadius:'6px',
         padding:'4px',
-        marginBottm: '24px'
+        marginBottom: '24px'
     },
     tabActive:{
         flex:1,
@@ -208,7 +207,7 @@ const styles = {
         backgroundColor: '#7c3aed',
         border: 'none',
         borderRadius: '4px',
-        fontColor: '#4c2121',
+        color: '#4c2121',
         padding: '6px 12px',
         cursor: 'pointer',
         fontWeight: '20px',

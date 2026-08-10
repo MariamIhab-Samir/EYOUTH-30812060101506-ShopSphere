@@ -7,6 +7,7 @@ export default function BottomNavbar () {
         <div style={bottomNavStyle}>
             <span style={navItemStyle} onClick={()=> navigate('/cart')}>Cart</span>
             <span style={navItemStyle} onClick={()=> navigate('/orderHistory')}>Order History</span>
+            <span style={navItemStyle} onClick={()=> navigate('/coupons')}>Coupons</span>
             <span style={navItemStyle} onClick={()=> navigate('/profile')}>Profile</span>
         </div>
     )

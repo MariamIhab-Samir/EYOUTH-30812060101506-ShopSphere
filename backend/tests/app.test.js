@@ -1,6 +1,6 @@
 const request=require('supertest');
 const app=require('../app');
-
+const mongoose=require('mongoose');
 const jwt=require('jsonwebtoken');
 jest.mock('jsonwebtoken');
 
@@ -19,6 +19,11 @@ jest.mock('../util/mailer', ()=>({
 }));
 
 describe('Express Application Core Middleware Baseline Suite', () =>{
+    
+    afterAll(async () => {
+        await mongoose.connection.close();
+    });
+
     it('[STATUS 200] Should verify the application root or health check is responsive', async ()=>{
         const response=await request(app).get('/');
 

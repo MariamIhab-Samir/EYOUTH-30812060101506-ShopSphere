@@ -1,5 +1,4 @@
 const {PrismaClient}=require('@prisma/client');
-const Comment=require('../config/commentModal');
 const activityLogModal=require('../config/activityLog');
 
 const prisma = new PrismaClient();
@@ -7,16 +6,23 @@ const prisma = new PrismaClient();
 const getProducts = async (req, res)=>{
     try{
         const products = await prisma.product.findMany();
-        const allComments=await Comment.find({});
 
         const statsByProduct={};
-        allComments.forEach(c=>{
-            if(!statsByProduct[c.productId]){
-                statsByProduct[c.productId]={total:0, count:0};
+        try{
+            const response=await fetch
+            (`${process.env.REVIEW_SERVICE_URL}/api/reviews/stats`);
+            if (response.ok){
+                const stats=await response.json();
+                stats.forEach(s=>{
+                    statsByProduct[s.productId]=
+                    {rating: s.rating, count: s.reviewCount};
+                })
+            }else{
+                console.error('Review service responded with', response.status);
             }
-            statsByProduct[c.productId].total +=c.rating;
-            statsByProduct[c.productId].count +=1;
-        });
+        }catch(reviewErr){
+            console.error('Review Service unavailable:', reviewErr.message);
+        }
 
         const enrichedProducts=products.map(p=>{
             const stats=statsByProduct[p.id];

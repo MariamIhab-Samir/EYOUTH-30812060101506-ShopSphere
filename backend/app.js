@@ -4,8 +4,10 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const authRouter = require('./routes/routes');
 const profileRouter=require('./routes/routes');
+const orderRouter=require('./routes/routes')
 const path=require('path');
-const activityModal=require('./config/activityLog')
+const activityLogModal=require('./config/activityLog');
+const {startReservationCleanupJob}=require('./jobs/scheduler');
 
 const app = express();
 const PORT = 5000;
@@ -23,6 +25,7 @@ app.get('/', (req,res)=>{
 
 app.use('/api/auth', authRouter);
 app.use('/api', authRouter);
+app.use('/api/orders', orderRouter);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use((err, req, res, next)=>{
@@ -48,6 +51,8 @@ const startServer = async () => {
             app.listen(PORT, () => {
                 console.log(`[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
                 console.log(`Health Check active at http://localhost:${PORT}/health`);
+                startReservationCleanupJob();
+                //startPromoEmailJob();
             });
         }
 

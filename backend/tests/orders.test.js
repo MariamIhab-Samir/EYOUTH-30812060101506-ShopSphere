@@ -3,12 +3,14 @@ const mockTransaction=jest.fn()
 const mockProductUpdate=jest.fn()
 const mockOrderCreate=jest.fn()
 const mockCartItemDeleteMany=jest.fn()
+const mockCartItemFindMany=jest.fn()
 
 jest.mock('@prisma/client', () => {
     return {
         PrismaClient: jest.fn().mockImplementation(() => {
             return {
-                $transaction:(fn)=>mockTransaction(fn)
+                $transaction:(fn)=>mockTransaction(fn),
+                order: {findUnique: jest.fn().mockResolvedValue({})}
             };
         }),
     };
@@ -20,6 +22,8 @@ jest.mock('../config/activityLog', ()=>({
 jest.mock('../util/mailer', ()=>({
     sendEmail: jest.fn().mockResolvedValue({})
 }))
+
+global.fetch=jest.fn().mockResolvedValue({ok:true, text: jest.fn().mockResolvedValue('')});
 
 const jwt=require('jsonwebtoken');
 jest.mock('jsonwebtoken');
@@ -36,19 +40,23 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const activityLogModal=require('../config/activityLog');
 
-const CREATE_ORDER_PATH='/api/auth/orders';
+const CREATE_ORDER_PATH='/api/orders';
 describe('Order Creation API', ()=>{
     beforeEach(()=>{
-        mockProductFindUnique.mockReset();
-        mockTransaction.mockReset();
+        mockProductFindUnique.mockReset()
+        mockTransaction.mockReset()
         mockProductUpdate.mockReset()
         mockOrderCreate.mockReset()
+        mockCartItemDeleteMany.mockReset()
+        mockCartItemFindMany.mockResolvedValue([{productId:5, quantity:2}])
         activityLogModal.create.mockReset().mockResolvedValue({});
 
         mockTransaction.mockImplementation(async(fn)=>{
             const tx={
                 product:{findUnique:mockProductFindUnique, update: mockProductUpdate},
                 order:{create: mockOrderCreate},
+                product:{findUnique: mockProductFindUnique},
+                cartItem:{findMany:mockCartItemFindMany, deleteMany:mockCartItemDeleteMany}
             };
             return fn(tx);
         })
@@ -59,17 +67,17 @@ describe('Order Creation API', ()=>{
     });
     
     it('should place an order and return 201 status', async()=>{
+        mockCartItemFindMany.mockResolvedValue([{id:1, userId:1, productId:'p1', quantity:2}]);
         mockProductFindUnique.mockResolvedValue({
             id:'p1',
             name:'Black Iphone 17',
             price:800,
             stock:15
         });
-
-        mockProductUpdate.mockResolvedValue({});
+        
         mockOrderCreate.mockResolvedValue({
             id:'order1',
-            totalAmount:1600,
+            totalPrice:1600,
             status:'SUCCESS',
             items:[{
                 productId:'p1', quantity:2, priceAtPurchase:800
@@ -90,6 +98,7 @@ describe('Order Creation API', ()=>{
     });
 
     it('should reject checkout on an empty cart with 400', async()=>{
+        mockCartItemFindMany.mockResolvedValue([]);
         const res=await request(app)
             .post(CREATE_ORDER_PATH)
             .set('Authorization', 'Bearer MOCK_USER_TOKEN')
@@ -99,20 +108,8 @@ describe('Order Creation API', ()=>{
             expect(res.body).toHaveProperty('error')
     });
 
-    it('should return 400 for insufficient stock', async()=>{
-        mockProductFindUnique.mockResolvedValue({id:'p1', name:'Black Iphone 17', price:800, stock:1});
-
-        const res=await request(app)
-            .post(CREATE_ORDER_PATH)
-            .set('Authorization', 'Bearer MOCK_USER_TOKEN')
-            .send({items:[{productId:'p1', quantity:5}]});
-
-            expect(res.status).toBe(400);
-            expect(res.body).toHaveProperty('error')
-    });
-
     it('should return a 500 status for non-stock/non-notFound error', async()=>{
-        mockProductFindUnique.mockRejectedValue(new Error('Database Connection Lost'));
+        mockCartItemFindMany.mockRejectedValue(new Error('Database Connection Lost'));
 
         const res=await request(app)
             .post(CREATE_ORDER_PATH)

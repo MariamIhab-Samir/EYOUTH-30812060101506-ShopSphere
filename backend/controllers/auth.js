@@ -1,6 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
-
 const prisma = new PrismaClient();
 
 const verifyAdminRole = (req, res) => {
@@ -36,6 +35,22 @@ const adminAddProduct = async (req, res) => {
       }
     });
 
+    console.log('APP_URL at fetch time:', process.env.APP_URL)
+    fetch(`${process.env.APP_URL}/api/webhooks/product-created`, {
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json',
+        'x-webhook-secret': process.env.WEBHOOK_SECRET
+        }, 
+          body: JSON.stringify({productId: newProduct.id})
+    }).then(async(res)=>{
+        if(!res.ok){
+          const body=await res.text();
+          console.error(`product-created webhook responded with ${res.status}`, body)
+        }else{
+          console.log('product-created webhook succeeded')
+        }
+    }).catch(error=> console.error('product-created webhook failed:', error))
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'SUCCESS',
@@ -87,7 +102,7 @@ const adminEditProduct = async (req, res) => {
       details: {httpStatus:200, adminId: req.user?.userId?? null, productId: id }
     }).catch(err => console.error('Log bypass:', err));
 
-    return res.status(200).json({ success: true, product: updatedProduct });/*Should be 200*/
+    return res.status(200).json({ success: true, product: updatedProduct });
   } catch (error) {
     console.error('Admin edit product error:', error);
     activityLogModal.create({

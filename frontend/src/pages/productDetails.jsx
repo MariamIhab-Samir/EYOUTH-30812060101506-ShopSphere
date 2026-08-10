@@ -11,7 +11,7 @@ export default function ProductDetails({onAddToCart, onViewReviews}){
     const navigate=useNavigate();
     const{data:products}=useProducts();
     const {addToCart}=useCart();
-    const product=products?.find(p=>String(p.id)===parseInt(productId,10));
+    const product=products?.find(p=>p.id===parseInt(productId,10));
     if(!product) {
         return(
             <PageLayout>
@@ -22,9 +22,13 @@ export default function ProductDetails({onAddToCart, onViewReviews}){
         );
     }
     
-    const handleAddToCart=()=>{
-        addToCart(product);
-        navigate('/cart')
+    const handleAddToCart=async()=>{
+        const result=await addToCart(product);
+        if(!result.success){
+            alert(result.message);
+            return;
+        }
+        navigate('/cart');
     }
 
     const handleViewReviews=(productId)=>{
@@ -74,6 +78,12 @@ export default function ProductDetails({onAddToCart, onViewReviews}){
                                 <span style={detailsStyles.metaLabel}>Price</span>
                                 <span style={detailsStyles.priceValue}>${product.price}</span>
                             </div>
+                            <div style={detailsStyles.metaNode}>
+                                <span style={detailsStyles.metaLabel}>Available Stock</span>
+                                <span style={detailsStyles.metaValue}>
+                                    {product.stock>0? `${product.stock} in stock`: 'Out of stock'}
+                                </span>
+                            </div>
                             <div style={detailsStyles.metaRow}>
                                 <p style={detailsStyles.commentText}>Add and view reviews</p>
                                 <span
@@ -86,8 +96,9 @@ export default function ProductDetails({onAddToCart, onViewReviews}){
                         </div>
                         <button
                             onClick={()=> handleAddToCart(product.id)}
-                            style={detailsStyles.cartBtn}>
-                            Allocate Unit to Session Cart
+                            disabled={product.stock===0}
+                            style={{...detailsStyles.cartBtn, opacity: product.stock===0? 0.5:1}}>
+                            {product.stock===0? 'Out of Stock' : 'Allocate Unit to Session Cart'}
                         </button>
                     </div>
                 </div>

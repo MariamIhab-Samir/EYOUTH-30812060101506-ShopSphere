@@ -31,6 +31,7 @@ const app = require('../app');
 const prisma = require('@prisma/client'); 
 const { sendWelcomeEmail } = require('../emails/welcome');
 const activityLogModal=require('../config/activityLog')
+const mongoose = require('mongoose');
 
 describe('POST /api/signup - Registration System', () => {
 
@@ -39,6 +40,10 @@ describe('POST /api/signup - Registration System', () => {
         
         const { PrismaClient } = require('@prisma/client');
         mockPrismaInstance = new PrismaClient();
+    });
+    
+    afterAll(async () => {
+        await mongoose.connection.close();
     });
 
     it('should register a valid user and return 201 status', async () => {

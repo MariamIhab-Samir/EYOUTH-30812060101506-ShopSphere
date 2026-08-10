@@ -44,14 +44,15 @@ export default function Home({setGlobalScreen}) {
     };
 
     const {addToCart}=useCart();
-    const handleAddToCart = (productId) => {
+    const handleAddToCart = async (productId) => {
         const targetedProduct=Products.find(p=> p.id === productId);
         if (!targetedProduct) return;
-        const result= addToCart(targetedProduct);
+        const result= await addToCart(targetedProduct);
         if(!result.success){
             alert(result.message);
             return;
         }
+        queryClient.invalidateQueries({queryKey:['products']});
         navigate('/cart');
     }
 
@@ -90,7 +91,6 @@ export default function Home({setGlobalScreen}) {
             const data= await response.json();
             if(!response.ok) throw new Error('Failed to delete product');
                 queryClient.invalidateQueries({queryKey:['products']});
-                /*setProducts(prev => prev.filter(p => p.id !== productId));*/
         }catch(err){
             alert(err.message);
         }
