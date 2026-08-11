@@ -64,7 +64,7 @@ Create a .env file inside your /backend folder:
 
 Code snippet
 PORT=5000
-DATABASE_URL="postgresql://username:password@localhost:5432/ecommerce_db?schema=public"
+DATABASE_URL="postgresql://username:password@localhost:5432/"Term1Project"?schema=public"
 MONGO_URI="mongodb://localhost:27017/ecommerce_logs"
 JWT_SECRET="your_secure_fallback_jwt_key_here"
 3. Synchronize Database & Schema
@@ -106,22 +106,5 @@ Frontend Client Workspace: http://localhost:3000
 Backend Core Live API: http://localhost:5000
 
 Health Check Monitoring Route: http://localhost:5000/health
-"this is an edit to my file on friday 24th of july at 6:13  since i realized some of my info didn't reach u so here is the whole info and please forgive me for this edit to my readme"
-PORT=5000
 
-DATABASE_URL="postgresql://postgres:Mariam%406122008@localhost:5432/"Term1Project"?schema=public"
-
-JWT_SECRET="Lionera@6122008"
-
-ADMIN_EMAIL=mariamfahim2008@gmail.com
-ADMIN_PASSWORD=Mariam@6122008
-TEST_USER_EMAIL=nellylamai2016@gmail.com
-TEST_USER_PASSWORD=Nelly@6111976
-
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=mariamfahim2008@gmail.com
-SMTP_PASS=ccvp ouad kicd bqnh
-EMAIL_FROM="Lionera <no-reply@Lionera.com>"
-
+"ok, this is an edit to my previous project since I had given you my credentials (my apologies), so yeah, I deleted it and now, u have .env.example for each .env required to make and yeah, also I realized my db name in DATABASE_URL was typed the first time wrong (it needed double quotes around the name(in some .env files it doesn't and yeah, the name wasn't right)) and the second time corretly so I changed it and now, it is without the credentials"
