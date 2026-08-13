@@ -61,7 +61,18 @@ app.use((err, req, res, next)=>{
             }).catch(err=> console.error('Log bypass:', err))
 })
 
+let isConnected = false;
+
+const connectDB=async()=>{
+    if(isConnected)return;
+    const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
+    await mongoose.connect(mongoUri);
+    isConnected=true;
+    console.log('[STATUS 200] MongoDB connected successfully.')
+}
+
 const startServer = async () => {
+    await connectDB();
     try {
         console.log('Initializing system data engines...');
         
