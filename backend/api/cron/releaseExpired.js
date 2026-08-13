@@ -1,4 +1,4 @@
-const releaseExpiredRwservations=require('../jobs/releaseExpiredReservations');
+const releaseExpiredReservations=require('../jobs/releaseExpiredReservations');
 
 module.exports=async(req,res)=>{
     if(req.headers['authorization']!==`Bearer ${process.env.CRON_SECRET}`){

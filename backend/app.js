@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const rateLimit=require('express-rate-limit');
+const helmet=require('helmet');
 const authRouter = require('./routes/routes');
 const profileRouter=require('./routes/routes');
 const orderRouter=require('./routes/routes')
@@ -12,7 +14,28 @@ const {startReservationCleanupJob}=require('./jobs/scheduler');
 const app = express();
 const PORT = 5000;
 
-app.use(cors()); 
+const allowedOrigins=[
+    'https://project5-final-frontend.vercel.app',
+    'http://localhost:3000'
+]
+app.use(cors({
+    origin: function (origin, callback){
+        if(!origin || allowedOrigins.includes(origin)){
+            callback(null, true);
+        }else{
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
+const limiter= rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+app.use(limiter);
+app.use(helmet());
 app.use(express.json());
 
 app.get('/health', (req, res) => {
