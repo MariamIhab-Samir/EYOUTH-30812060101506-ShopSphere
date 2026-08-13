@@ -54,8 +54,6 @@ const startServer = async () => {
     try {
 
         const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-        await mongoose.connect(mongoUri);
-        
         console.log('[STATUS 200] MongoDB connected successfully. (Review Service Engine online).');
 
         if (process.env.NODE_ENV !== 'test'){
