@@ -2,11 +2,33 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const notificationRouter=require('./routes/routes');
-const {startPromoEmailJob}=require('./jobs/scheduler');
-
+const rateLimit=require('express-rate-limit');
+const helmet=require('helmet');
 const app=express();
 const PORT=process.env.PORT || 5002;
 
+const allowedOrigins=[
+    'https://project5-final-frontend.vercel.app',
+    'http://localhost:3000'
+]
+app.use(cors({
+    origin: function (origin, callback){
+        if(!origin || allowedOrigins.includes(origin)){
+            callback(null, true);
+        }else{
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
+const limiter= rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+app.use(limiter);
+app.use(helmet());
 app.use(cors()); 
 app.use(express.json());
 

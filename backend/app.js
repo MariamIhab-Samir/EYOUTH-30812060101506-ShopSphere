@@ -9,7 +9,6 @@ const profileRouter=require('./routes/routes');
 const orderRouter=require('./routes/routes')
 const path=require('path');
 const activityLogModal=require('./config/activityLog');
-const {startReservationCleanupJob}=require('./jobs/scheduler');
 
 const app = express();
 const PORT = 5000;
@@ -74,8 +73,6 @@ const startServer = async () => {
             app.listen(PORT, () => {
                 console.log(`[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
                 console.log(`Health Check active at http://localhost:${PORT}/health`);
-                startReservationCleanupJob();
-                //startPromoEmailJob();
             });
         }
 
