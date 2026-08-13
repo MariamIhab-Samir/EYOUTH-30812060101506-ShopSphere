@@ -11,6 +11,7 @@ const path=require('path');
 const activityLogModal=require('./config/activityLog');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = 5000;
 
 const allowedOrigins=[
