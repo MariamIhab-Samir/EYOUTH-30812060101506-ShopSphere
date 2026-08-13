@@ -6,7 +6,6 @@ const prisma=new PrismaClient();
 async function sendPromoNotificationEmails(){
     const pending=await prisma.notification.findMany({
         where:{emailedAt: null},
-        //include:{user:true, product:true}
     });
 
     if(pending.length===0)return 0;
@@ -25,7 +24,7 @@ async function sendPromoNotificationEmails(){
             await sendEmail({
                 to:userEmail,
                 subject:products.length>1 ? `${products.length} new arrivals you might like`
-                    :`ew arrival: $(products[0].name)`,
+                    :`New arrival: ${products[0].name}`,
                 html
             });
             await prisma.notification.updateMany({

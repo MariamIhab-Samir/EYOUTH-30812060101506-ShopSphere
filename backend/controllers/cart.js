@@ -1,10 +1,12 @@
 const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
+const releaseExpiredReservations=require('../jobs/releaseExpiredReservations')
 const prisma = new PrismaClient();
 const addToCart = async (req, res) => {
     const userId =req.user.userId;
     const {productId, quantity}=req.body;
     try{
+        await releaseExpiredReservations();
         const result=await prisma.$transaction(async(tx)=>{
             const product=await tx.product.findUnique({where:{id:productId}});
             if(!product){
@@ -80,6 +82,7 @@ const addToCart = async (req, res) => {
 const getCart = async (req, res) => {
     const userId = req.user.userId;
     try {
+        await releaseExpiredReservations();
         const cartItems = await prisma.cartItem.findMany({
             where: { userId },
             include: { product: true }
@@ -105,6 +108,7 @@ const updateCartItem = async (req, res) => {
     const cartItemId=parseInt(req.params.id);
     const {quantity: newQuantity}=req.body;
     try{
+        await releaseExpiredReservations();
         const result=await prisma.$transaction(async(tx)=>{
             const item=await tx.cartItem.findUnique({
                 where:{id:cartItemId}
