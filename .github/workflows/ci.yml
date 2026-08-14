@@ -1,4 +1,5 @@
 name: CI
+run-name: CI Pipeline
 on:
   pull_request:
     branches: [master]
@@ -11,8 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm install
-      - run: npm test
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm install
+      - name: Run tests
+        working-directory: ./backend
+        run: npm test
         env:
           PORT: ${{secrets.PORT}}
           DATABASE_URL: ${{secrets.DATABASE_URL}}
@@ -41,8 +46,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm install
-      - run: npm test
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm install
+      - name: Run tests
+        working-directory: ./frontend
+        run: npm test
         env:
           VITE_API_URL: ${{secrets.VITE_API_URL}}
   test-notification-microservice:
@@ -51,8 +60,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm install
-      - run: npm test
+      - name: Install dependencies
+        working-directory: ./notification_service
+        run: npm install
+      - name: Run tests
+        working-directory: ./notification_service
+        run: npm test
         env:
           PORT: ${{secrets.PORT}}
           DATABASE_URL: ${{secrets.DATABASE_URL}}
@@ -70,8 +83,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm install
-      - run: npm test
+      - name: Install dependencies
+        working-directory: ./review_service
+        run: npm install
+      - name: Run tests
+        working-directory: ./review_service
+        run: npm test
         env:
           PORT: ${{secrets.PORT}}
           MONGO_URI: ${{secrets.MONGO_URI}}
