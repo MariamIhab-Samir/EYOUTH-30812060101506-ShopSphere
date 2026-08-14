@@ -11,7 +11,7 @@
     "postinstall": "prisma generate",
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "npm run db:seed && jest --runInBand --detectOpenHandles --forceExit",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
     "db:pull": "npx prisma db pull",
     "db:generate": "npx prisma generate",
     "db:seed": "node prisma/seed.js"
