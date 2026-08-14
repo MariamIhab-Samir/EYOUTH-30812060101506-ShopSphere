@@ -26,3 +26,74 @@ jobs:
       - name: Run tests
         working-directory: ./${{matrix.service}}
         run: npm test
+  test-backend:
+    environment: project5_final_backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npm test
+        env:
+          PORT: ${{secrets.PORT}}
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          MONGO_URI: ${{secrets.MONGO_URI}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}
+          ADMIN_EMAIL: ${{secrets.ADMIN_EMAIL}}
+          ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
+          TEST_USER_EMAIL: ${{secrets.TEST_USER_EMAIL}}
+          TEST_USER_PASSWORD: ${{secrets.TEST_USER_PASSWORD}}
+          SMTP_HOST: ${{secrets.SMTP_HOST}}
+          SMTP_PORT: ${{secrets.SMTP_PORT}}
+          SMTP_SECURE: ${{secrets.SMTP_SECURE}}
+          SMTP_USER: ${{secrets.SMTP_USER}}
+          SMTP_PASS: ${{secrets.SMTP_PASS}}
+          EMAIL_FROM: ${{secrets.EMAIL_FROM}}
+          WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}}
+          APP_URL: ${{secrets.APP_URL}}
+          ADMIN_ALERT_EMAIL: ${{secrets.ADMIN_ALERT_EMAIL}}
+          LOW_STOCK_THRESHOLD: ${{secrets.LOW_STOCK_THRESHOLD}}
+          REVIEW_SERVICE_URL: ${{secrets.REVIEW_SERVICE_URL}}
+          NOTIFICATION_SERVICE_URL: ${{secrets.NOTIFICATION_SERVICE_URL}}
+          CRON_SECRET: ${{secrets.CRON_SECRET}}
+  test-frontend:
+    environment: project5_final_frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npm test
+        env:
+          VITE_API_URL: ${{VITE_API_URL}}
+  test-notification-microservice:
+    environment: project5_final_notification_microservice
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npm test
+        env:
+          PORT: ${{secrets.PORT}}
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          SMTP_HOST: ${{secrets.SMTP_HOST}}
+          SMTP_PORT: ${{secrets.SMTP_PORT}}
+          SMTP_SECURE: ${{secrets.SMTP_SECURE}}
+          SMTP_USER: ${{secrets.SMTP_USER}}
+          SMTP_PASS: ${{secrets.SMTP_PASS}}
+          EMAIL_FROM: ${{secrets.EMAIL_FROM}}
+          WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}}
+          CRON_SECRET: ${{secrets.CRON_SECRET}}
+  test-review-microservice:
+    environment: project5_final_review_microservice
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npm test
+        env:
+          PORT: ${{secrets.PORT}}
+          MONGO_URI: ${{secrets.MONGO_URI}}
+          WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}} 
