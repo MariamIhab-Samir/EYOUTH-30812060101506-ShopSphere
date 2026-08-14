@@ -2,12 +2,12 @@ name: CI
 run-name: CI Pipeline
 on:
   pull_request:
-    branches: [master]
+    branches: [master] 
   push:
     branches: [master]
 jobs:
   test-backend:
-    environment: project5_final_backend
+    environment: Preview – project5_final_backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
           NOTIFICATION_SERVICE_URL: ${{secrets.NOTIFICATION_SERVICE_URL}}
           CRON_SECRET: ${{secrets.CRON_SECRET}}
   test-frontend:
-    environment: project5_final_frontend
+    environment: Preview – project5_final_frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
         env:
           VITE_API_URL: ${{secrets.VITE_API_URL}}
   test-notification-microservice:
-    environment: project5_final_notification_microservice
+    environment: Preview – project5_final_notification_microservice
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
           WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}}
           CRON_SECRET: ${{secrets.CRON_SECRET}}
   test-review-microservice:
-    environment: project5_final_review_microservice
+    environment: Preview – project5_final_review_microservice
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
