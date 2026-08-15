@@ -46,6 +46,7 @@
   "liscense": "ISC",
   "jest":{
     "testTimeout": 15000,
-    "setupFiles": ["<rootDir>/jest.setup.js"]
+    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "globalTeardown": "<rootDir>/jest.globalTeardown.js"
   }
 }
