@@ -132,6 +132,7 @@ describe('Cart API', ()=>{
 
     describe('GET /api/cart', ()=>{
         it('returns the user\'s cart items with 200', async()=>{
+            mockCartItemFindMany.mockResolvedValueOnce([]);
             mockCartItemFindMany.mockResolvedValue([{ id: 1, userId: 1, productId: 5, quantity: 1, product:{id: 5, name:'Black Iphone 17'}}]);
 
             const res=await request(app)
@@ -282,7 +283,7 @@ describe('Cart API', ()=>{
         })
 
         it('returns 500 and logs failure on a server error', async()=>{
-            mockCartItemFindUnique.mockRejectedValue(new Error('Database Connection Lost'));
+            mockCartItemFindMany.mockRejectedValue(new Error('Database Connection Lost'));
 
             const res=await request(app)
                 .delete('/api/cart')
