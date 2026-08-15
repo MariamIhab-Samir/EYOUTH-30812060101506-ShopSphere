@@ -19,6 +19,7 @@ jobs:
         run: |
           echo "MONGO_URI length: ${#MONGO_URI}"
           echo "DATABASE_URL length: ${#DATABASE_URL}"
+          echo "TEST_VALUE length: ${#TEST_VALUE}"
       - name: Run tests
         working-directory: ./backend
         run: npm test
