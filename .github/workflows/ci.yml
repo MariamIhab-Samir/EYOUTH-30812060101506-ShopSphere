@@ -19,11 +19,9 @@ jobs:
         run: |
           echo "MONGO_URI length: ${#MONGO_URI}"
           echo "DATABASE_URL length: ${#DATABASE_URL}"
-          echo "TEST_VALUE length: ${#TEST_VALUE}"
         env:
           MONGO_URI: ${{secrets.MONGO_URI}}
           DATABASE_URL: ${{secrets.DATABASE_URL}}
-          TEST_VALUE: ${{secrets.TEST_VALUE}}
       - name: Run tests
         working-directory: ./backend
         run: npm test
