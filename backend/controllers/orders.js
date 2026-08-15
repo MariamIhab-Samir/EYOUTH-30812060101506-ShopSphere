@@ -46,14 +46,14 @@ const createOrder = async (req, res) => {
                 redeemedCouponId = coupon.id;
             }
 
-            const fianlPrice = appliedDiscount > 0
+            const finalPrice = appliedDiscount > 0
                 ? subtotal * (1 - appliedDiscount / 100)
                 : subtotal;
             
             const newOrder = await tx.order.create({
                 data: {
                     userId,
-                    totalPrice,
+                    totalPrice: finalPrice,
                     status: 'SUCCESS', 
                     items: {
                         create: orderItemsData

@@ -1,6 +1,8 @@
 const mockProductFindUnique=jest.fn() 
 const mockCartItemUpsert=jest.fn() 
 const mockCartItemFindUnique=jest.fn() 
+const mockCartItemFindMany=jest.fn()
+const mockCartItemDelete=jest.fn()
 const mockTransaction=jest.fn() 
 const mockProductUpdate=jest.fn() 
 

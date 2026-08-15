@@ -19,7 +19,11 @@ jest.mock('../util/mailer', ()=>({
 }));
 
 describe('Express Application Core Middleware Baseline Suite', () =>{
-    
+    beforeAll(async()=>{
+        if(mongoose.connection.readyState !== 1){
+            await new Promise((resolve)=> mongoose.connection.once('connected', resolve));
+        }
+    })
     afterAll(async () => {
         await mongoose.connection.close();
     });
