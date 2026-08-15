@@ -55,6 +55,7 @@ describe('cart.js - stock-low webhook trigger unit', ()=>{
         mockProductFindUnique.mockReset()
         mockCartItemUpsert.mockReset()
         mockCartItemFindUnique.mockReset()
+        mockCartItemFindMany.mockResolvedValue([])
         mockTransaction.mockReset()
         mockProductUpdate.mockReset()
         global.fetch.mockReset()

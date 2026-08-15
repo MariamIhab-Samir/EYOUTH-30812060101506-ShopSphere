@@ -64,7 +64,7 @@ app.use((err, req, res, next)=>{
 let isConnected = false;
 
 const connectDB=async()=>{
-    if(isConnected)return;
+    if(isConnected && mongoose.connection.readyState === 1)return;
     const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
     console.log('DEBUG mongoUri length at connect time:', mongoUri.length, 'NODE_ENV', process.env.NODE_ENV);
     await mongoose.connect(mongoUri);

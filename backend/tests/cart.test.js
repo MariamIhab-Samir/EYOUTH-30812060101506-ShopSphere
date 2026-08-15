@@ -56,7 +56,7 @@ describe('Cart API', ()=>{
         mockProductUpdate.mockReset()
         mockCartItemDelete.mockReset()
         mockCartItemDeleteMany.mockReset()
-        mockCartItemFindMany.mockReset()
+        mockCartItemFindMany.mockResolvedValue([])
         mockCartItemUpdate.mockReset() 
         activityLogModal.create.mockReset().mockResolvedValue({});
         
