@@ -44,6 +44,7 @@ let isConnected = false;
 const connectDB=async()=>{
     if(isConnected)return;
     const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
+    console.log('DEBUG mongoUri length at connect time:', mongoUri.length, 'NODE_ENV', process.env.NODE_ENV);
     await mongoose.connect(mongoUri);
     isConnected=true;
     console.log('[STATUS 200] MongoDB connected successfully.')
