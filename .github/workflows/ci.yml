@@ -15,6 +15,10 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: npm install
+      - name: Debug secrets
+        run: |
+          echo "MONGO_URI is set: ${{secrets.MONGO_URI !==}}"
+          echo "DATABASE_URL is set: ${{secrets.DATABASE_URL !==}}"
       - name: Run tests
         working-directory: ./backend
         run: npm test
