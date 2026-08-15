@@ -4,7 +4,7 @@ const {PrismaClient}=require('@prisma/client');
 const mongoose =require('mongoose');
 
 jest.mock('../config/activityLog', ()=>({create: jest.fn().mockResolvedValue({})}));
-jest.mock('../emails/welcome', ()=>({create: jest.fn().mockResolvedValue({})}));
+jest.mock('../emails/welcome', ()=>({sendWelcomeEmail: jest.fn().mockResolvedValue({})}));
 
 const prisma=new PrismaClient();
 const TEST_EMAIL='integration_signup_test@example.com';

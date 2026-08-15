@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
                 });
 
             }
-
+            let subtotal = totalPrice;
             let appliedDiscount=0;
             let redeemedCouponId=null;
             if(couponCode){
@@ -42,7 +42,13 @@ const createOrder = async (req, res) => {
                 if(isExpired){
                     throw new Error('Coupon has expired')
                 }
+                appliedDiscount = coupon.discountPercent;
+                redeemedCouponId = coupon.id;
             }
+
+            const fianlPrice = appliedDiscount > 0
+                ? subtotal * (1 - appliedDiscount / 100)
+                : subtotal;
             
             const newOrder = await tx.order.create({
                 data: {

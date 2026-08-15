@@ -27,7 +27,7 @@ let targetOrderId = '';
 describe('Unified User Profile, Orders & Admin Product Lifecycle Suite', () => {
 
     beforeEach(async () => {
-        await prisma.orderItem.deleteMany({});
+        await prisma.orderItem.deleteMany({where: {order: {userId: {in: []}}}});
         await prisma.order.deleteMany({});
         await prisma.cartItem.deleteMany({});
         await prisma.product.deleteMany({});

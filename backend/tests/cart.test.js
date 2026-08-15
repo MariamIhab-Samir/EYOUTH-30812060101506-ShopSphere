@@ -13,7 +13,13 @@ jest.mock('@prisma/client', () => {
         PrismaClient: jest.fn().mockImplementation(() => {
             return {
                 $transaction:(fn)=>mockTransaction(fn),
-                cartItem:{ findMany:mockCartItemFindMany}
+                cartItem:{
+                    findMany: mockCartItemFindMany,
+                    delete: mockCartItemDelete
+                },
+                product: {
+                    update: mockProductUpdate
+                }
             };
         }),
     };
