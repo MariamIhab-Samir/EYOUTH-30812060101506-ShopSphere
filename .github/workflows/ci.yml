@@ -1,5 +1,5 @@
-name: CI
-run-name: CI Pipeline
+name: CI/CD
+run-name: CI/CD Pipeline
 on:
   pull_request:
     branches: [master] 
