@@ -2,7 +2,7 @@ const mockNotificationUpsert=jest.fn();
 const mockNotificationFindMany=jest.fn();
 const mockNotificationUpdateMany=jest.fn();
 
-jest.mock('@Prisma/client', ()=>{
+jest.mock('@prisma/client', ()=>{
     return{
         PrismaClient: jest.fn().mockImplementation(()=>{
             return{
