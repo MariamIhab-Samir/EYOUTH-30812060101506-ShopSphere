@@ -103,7 +103,7 @@ jobs:
       - name: Deploy to Vercel (backend)
         working-directory: ./backend
         run: |
-          npx vercel --token=${{secrets.VERCEL_TOKEN}} --prod --yes \
+          npx vercel --token=${{secrets.VERCEL_TOKEN}} --prod --yes --debug \
           --scope ${{secrets.VERCEL_ORG_ID}}
         env:
           VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
