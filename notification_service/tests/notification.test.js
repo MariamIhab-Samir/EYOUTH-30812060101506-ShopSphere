@@ -148,7 +148,7 @@ describe('sendPromoNotificationEmails - Unit', ()=>{
 });
 
 describe('sendPromoEmails cron handler - Unit', ()=>{
-    const sendPromoEmailsHandler=require('../api/cron.sendPromoEmails');
+    const sendPromoEmailsHandler=require('../api/cron/sendPromoEmails');
 
     let req,res;
     beforeEach(()=>{

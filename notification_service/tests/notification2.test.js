@@ -30,7 +30,7 @@ describe('POST /api/notifications/product-created - Integration', ()=>{
 
     it('creates a real notification row and sends a promo email', async()=>{
         const res=await request(app)
-            .post(WEBHOOOK_PATH)
+            .post(WEBHOOK_PATH)
             .set('x-webhook-secret', 'test-webhook-secret')
             .send({
                 productId: TEST_PRODUCT_ID,
