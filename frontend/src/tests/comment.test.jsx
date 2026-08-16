@@ -7,7 +7,7 @@ import {useComments, useAddComment} from '../hooks/useComments';
 
 jest.mock('../hooks/useComments');
 jest.mock('../components/pageLayout', ()=>({children})=> <div>{children}</div>);
-jest.mock('../components/starDIsplay', ()=>({rating})=> <div>{'★'}.repeat{(rating)}</div>);
+jest.mock('../components/starDisplay', ()=>({rating})=> <div>{'★'}.repeat{(rating)}</div>);
 
 const renderComments=(state)=>render(
     <MemoryRouter initialEntries={[{pathname:'/comment/5', state}]}>
