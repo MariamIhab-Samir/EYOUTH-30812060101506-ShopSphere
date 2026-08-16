@@ -138,7 +138,7 @@ describe('sendPromoNotificationEmails - Unit', ()=>{
         ]);
         mockNotificationUpdateMany.mockResolvedValue([]);
         sendEmail
-            .mockRejectedValue(new Error('SMTP down'))
+            .mockRejectedValueOnce(new Error('SMTP down'))
             .mockResolvedValueOnce({});
         const count=await sendPromoNotificationEmails();
 
