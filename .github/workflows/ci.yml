@@ -96,14 +96,14 @@ jobs:
   deploy-backend:
     needs: [test-backend] 
     if: github.ref == 'refs/heads/master' && github.event_name=='push'
-    environment: Production – project5_final_backend
+    environment: Preview – project5_final_backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Deploy to Vercel (backend)
         working-directory: ./backend
         run: |
-          npx vercel --token=${{secrets.VERCEL_TOKEN}} --prod --yes --debug \
+          npx vercel --token=${{secrets.VERCEL_TOKEN}} --prod --yes \
           --scope ${{secrets.VERCEL_ORG_ID}}
         env:
           VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
@@ -111,7 +111,7 @@ jobs:
   deploy-frontend:
     needs: [test-frontend] 
     if: github.ref == 'refs/heads/master' && github.event_name=='push'
-    environment: Production – project5_final_frontend
+    environment: Preview – project5_final_frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -126,7 +126,7 @@ jobs:
   deploy-notification-microservice:
     needs: [test-notification-microservice] 
     if: github.ref == 'refs/heads/master' && github.event_name=='push'
-    environment: Production – project5_final_notification_microservice
+    environment: Preview – project5_final_notification_microservice
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -141,7 +141,7 @@ jobs:
   deploy-review-microservice:
     needs: [test-review-microservice] 
     if: github.ref == 'refs/heads/master' && github.event_name=='push'
-    environment: Production – project5_final_review_microservice
+    environment: Preview – project5_final_review_microservice
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
