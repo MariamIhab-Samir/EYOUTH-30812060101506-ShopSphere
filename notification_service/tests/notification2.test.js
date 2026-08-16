@@ -8,7 +8,7 @@ jest.mock('../util/mailer', ()=> ({
 }));
 
 const {sendEmail}=require('../util/mailer');
-const sendPromoNotificationEmails=require('../../jobs/promoNotification');
+const sendPromoNotificationEmails=require('../jobs/promoNotification');
 
 const WEBHOOK_PATH='/api/notifications/product-created';
 const TEST_USER_EMAIL='integration_notification_user@example.com';

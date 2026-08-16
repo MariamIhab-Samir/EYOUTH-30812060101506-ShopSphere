@@ -23,7 +23,7 @@ jest.mock('../util/mailer', ()=>({
 const{sendEmail}=require('../util/mailer');
 const request=require('supertest');
 const app=require('../app');
-const sendPromoNotificationEmails=require('../../jobs/promoNotification');
+const sendPromoNotificationEmails=require('../jobs/promoNotification');
 
 describe('POST /api/notifications/product-created', ()=>{
     const WEBHOOK_PATH='/api/notifications/product-created';
