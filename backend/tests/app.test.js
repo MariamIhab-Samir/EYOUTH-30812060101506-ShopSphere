@@ -19,11 +19,6 @@ jest.mock('../util/mailer', ()=>({
 }));
 
 describe('Express Application Core Middleware Baseline Suite', () =>{
-    
-    afterAll(async () => {
-        await mongoose.connection.close();
-    });
-
     it('[STATUS 200] Should verify the application root or health check is responsive', async ()=>{
         const response=await request(app).get('/');
 

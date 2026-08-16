@@ -24,7 +24,7 @@ async function sendPromoNotificationEmails(){
             await sendEmail({
                 to:userEmail,
                 subject:products.length>1 ? `${products.length} new arrivals you might like`
-                    :`New arrival: ${products[0].name}`,
+                    :`New arrival: ${products[0].productName}`,
                 html
             });
             await prisma.notification.updateMany({

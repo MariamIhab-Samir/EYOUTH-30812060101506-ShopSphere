@@ -1,6 +1,8 @@
 const mockProductFindUnique=jest.fn() 
 const mockCartItemUpsert=jest.fn() 
 const mockCartItemFindUnique=jest.fn() 
+const mockCartItemFindMany=jest.fn()
+const mockCartItemDelete=jest.fn()
 const mockTransaction=jest.fn() 
 const mockProductUpdate=jest.fn() 
 
@@ -8,7 +10,14 @@ jest.mock('@prisma/client', () => {
     return {
         PrismaClient: jest.fn().mockImplementation(() => {
             return {
-                $transaction:(fn)=>mockTransaction(fn)
+                $transaction:(fn)=>mockTransaction(fn),
+                cartItem:{
+                    findMany: mockCartItemFindMany,
+                    delete: mockCartItemDelete
+                },
+                product: {
+                    update: mockProductUpdate
+                }
             };
         }),
     };
@@ -46,6 +55,7 @@ describe('cart.js - stock-low webhook trigger unit', ()=>{
         mockProductFindUnique.mockReset()
         mockCartItemUpsert.mockReset()
         mockCartItemFindUnique.mockReset()
+        mockCartItemFindMany.mockResolvedValue([])
         mockTransaction.mockReset()
         mockProductUpdate.mockReset()
         global.fetch.mockReset()

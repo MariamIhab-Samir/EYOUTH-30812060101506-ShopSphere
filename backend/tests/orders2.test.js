@@ -16,9 +16,9 @@ let buyerId, productId, cartId;
 describe('POST /api/orders - Integration', ()=>{
     beforeEach(async()=>{
         await prisma.orderItem.deleteMany({});
+        await prisma.order.deleteMany({});
         await prisma.cartItem.deleteMany({});
         await prisma.product.deleteMany({});
-        await prisma.order.deleteMany({});
         await prisma.user.deleteMany({where: {email: BUYER_EMAIL}});
 
         const buyer=await prisma.user.create({

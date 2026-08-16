@@ -1,4 +1,4 @@
-const sendPromoNotificationEmails=require('../jobs/promoNotification');
+const sendPromoNotificationEmails=require('../../jobs/promoNotification');
 
 module.exports=async(req, res)=>{
     if(req.headers['authorization']!==`Bearer ${process.env.CRON_SECRET}`){
