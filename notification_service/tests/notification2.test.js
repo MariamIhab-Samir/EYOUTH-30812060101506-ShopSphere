@@ -8,7 +8,7 @@ jest.mock('../util/mailer', ()=> ({
 }));
 
 const {sendEmail}=require('../util/mailer');
-const sendPromoNotificationEmails=require('../jobs/promoNotification');
+const sendPromoNotificationEmails=require('../../jobs/promoNotification');
 
 const WEBHOOK_PATH='/api/notifications/product-created';
 const TEST_USER_EMAIL='integration_notification_user@example.com';
@@ -41,7 +41,7 @@ describe('POST /api/notifications/product-created - Integration', ()=>{
                 matchedUsers: [{id: TEST_USER_ID, email: TEST_USER_EMAIL}]
             });
         expect(res.status).toBe(200);
-        expect(res.body.success).toBE(true);
+        expect(res.body.success).toBe(true);
         expect(sendEmail).toHaveBeenCalledWith(
             expect.objectContaining({to: TEST_USER_EMAIL})
         );
@@ -52,6 +52,4 @@ describe('POST /api/notifications/product-created - Integration', ()=>{
         expect(notification).not.toBeNull();
         expect(notification.emailedAt).not.toBeNull();
     })
-
-    //it('does not create a duplicate row for the same user/product pair on ')
 })
