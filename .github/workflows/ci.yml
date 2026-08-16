@@ -15,13 +15,6 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: npm install
-      - name: Debug secrets
-        run: |
-          echo "MONGO_URI length: ${#MONGO_URI}"
-          echo "DATABASE_URL length: ${#DATABASE_URL}"
-        env:
-          MONGO_URI: ${{secrets.MONGO_URI}}
-          DATABASE_URL: ${{secrets.DATABASE_URL}}
       - name: Run tests
         working-directory: ./backend
         run: npm test
@@ -99,4 +92,60 @@ jobs:
         env:
           PORT: ${{secrets.PORT}}
           MONGO_URI: ${{secrets.MONGO_URI}}
-          WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}} 
+          WEBHOOK_SECRET: ${{secrets.WEBHOOK_SECRET}}
+  deploy-backend:
+    needs: [test-backend] 
+    if: github.ref == 'refs/heads/master' && github.event_name=='push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel (backend)
+        working-directory: ./backend
+        runs: |
+          npx vercel --token=${{secrtes.VERCEL_TOKEN}} --prod --yes \
+          --scope ${{secrets.VERCEL_ORG_ID}}
+        env:
+          VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
+          VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID_BACKEND}}
+  deploy-frontend:
+    needs: [test-frontend] 
+    if: github.ref == 'refs/heads/master' && github.event_name=='push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel (frontend)
+        working-directory: ./frontend
+        runs: |
+          npx vercel --token=${{secrtes.VERCEL_TOKEN}} --prod --yes \
+          --scope ${{secrets.VERCEL_ORG_ID}}
+        env:
+          VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
+          VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID}}
+  deploy-notification-microservice:
+    needs: [test-backend] 
+    if: github.ref == 'refs/heads/master' && github.event_name=='push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel (notification service))
+        working-directory: ./notification_service
+        runs: |
+          npx vercel --token=${{secrtes.VERCEL_TOKEN}} --prod --yes \
+          --scope ${{secrets.VERCEL_ORG_ID}}
+        env:
+          VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
+          VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID}}
+  deploy-backend:
+    needs: [test-review-microservice] 
+    if: github.ref == 'refs/heads/master' && github.event_name=='push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel (review service)
+        working-directory: ./review_service
+        runs: |
+          npx vercel --token=${{secrtes.VERCEL_TOKEN}} --prod --yes \
+          --scope ${{secrets.VERCEL_ORG_ID}}
+        env:
+          VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
+          VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID}}
