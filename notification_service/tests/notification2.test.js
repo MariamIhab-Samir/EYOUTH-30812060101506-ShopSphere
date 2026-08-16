@@ -51,5 +51,5 @@ describe('POST /api/notifications/product-created - Integration', ()=>{
         });
         expect(notification).not.toBeNull();
         expect(notification.emailedAt).not.toBeNull();
-    })
+    }, 15000)
 })

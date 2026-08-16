@@ -134,7 +134,7 @@ describe('sendPromoNotificationEmails - Unit', ()=>{
     it('continues emailing remaining users if one send fails', async()=>{
         mockNotificationFindMany.mockResolvedValue([
             {id:1, userId:1, userEmail:'fails@example.com', productName: 'Product A'},
-            {id:2, userId:1, userEmail:'ok@example.com', productName: 'Product B'}
+            {id:2, userId:2, userEmail:'ok@example.com', productName: 'Product B'}
         ]);
         mockNotificationUpdateMany.mockResolvedValue([]);
         sendEmail
