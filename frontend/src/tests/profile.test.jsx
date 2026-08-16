@@ -13,7 +13,6 @@ jest.mock('../components/logoutButton', ()=> ()=> <button>Logout</button>);
 jest.mock('../components/pageLayout', ()=> ({children})=> <div>{children}</div>);
 
 const mockUser={name:'Mariam Fahim', email:'mariam@example.com', age:22, gender:'FEMALE'};
-
 const renderProfile=()=> render(<MemoryRouter><Profile/></MemoryRouter>);
 
 describe('Profile', ()=>{
