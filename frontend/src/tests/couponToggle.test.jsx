@@ -39,6 +39,6 @@ describe('Coupons - tab toggle', ()=>{
         );
         render(<Coupons/>);
         await userEvent.click(screen.getByRole('button', {name:/inventory/i}));
-        expect(await screen.findByText(/SALE10/i)).not.toBeInTheDocument();
+        expect(await screen.queryByText(/SALE10/i)).not.toBeInTheDocument();
     })
 })
