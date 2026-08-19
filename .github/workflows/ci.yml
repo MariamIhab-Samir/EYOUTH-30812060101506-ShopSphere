@@ -52,8 +52,6 @@ jobs:
       - name: Run tests
         working-directory: ./frontend
         run: npm test
-        env:
-          VITE_API_URL: ${{secrets.VITE_API_URL}}
   test-notification-microservice:
     environment: Preview – project5_final_notification_microservice
     runs-on: ubuntu-latest
