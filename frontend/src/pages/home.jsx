@@ -84,7 +84,8 @@ export default function Home({setGlobalScreen}) {
 
         try{
             const token= localStorage.getItem('token');
-            const response = await fetch (`http://localhost:5000/api/admin/products/${productId}`, {
+            const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
+            const response = await fetch (`${baseUrl}/api/admin/products/${productId}`, {
                 method: 'DELETE',
                 headers: {'Authorization': `Bearer ${token}`}
             });

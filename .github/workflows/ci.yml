@@ -52,8 +52,6 @@ jobs:
       - name: Run tests
         working-directory: ./frontend
         run: npm test
-        env:
-          VITE_API_URL: ${{secrets.VITE_API_URL}}
   test-notification-microservice:
     environment: Preview – project5_final_notification_microservice
     runs-on: ubuntu-latest
@@ -123,6 +121,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
           VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID}}
+          VITE_API_URL: ${{secrets.VITE_API_URL}}
   deploy-notification-microservice:
     needs: [test-notification-microservice] 
     if: github.ref == 'refs/heads/master' && github.event_name=='push'

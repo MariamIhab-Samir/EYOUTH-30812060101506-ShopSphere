@@ -49,6 +49,7 @@ export default function ProductModal({product, onClose, onSuccess}) {
             if (formData.description) payload.append('description', formData.description);
             if(imageFile) payload.append('productImage', imageFile);
             
+            const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
             const endpoint = isEditMode 
             ? `http://localhost:5000/api/admin/products/${product.id}`
             : `http://localhost:5000/api/admin/products`;

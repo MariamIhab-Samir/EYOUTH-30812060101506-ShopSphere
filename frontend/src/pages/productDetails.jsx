@@ -38,7 +38,8 @@ export default function ProductDetails({onAddToCart, onViewReviews}){
     const getImageUrl=(image)=>{
         if(!image) return null;
         if(image.startsWith('/uploads')){
-            return `http://localhost:5000${image}`
+            const baseUrl=import.meta.env.VITE_API_URL|| 'http://localhost:5000/api';
+            return `${baseUrl}${image}`
         }
         return image;
     }
