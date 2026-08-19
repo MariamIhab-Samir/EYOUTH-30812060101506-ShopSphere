@@ -31,7 +31,7 @@ describe('Coupons - tab toggle', ()=>{
         expect(await screen.findByText(/3 left/i)).toBeInTheDocument();
     });
 
-    it('shows out of stock when a coupon has none left', async()=>{
+    it('hides a coupon that has no stock left', async()=>{
         useQuery.mockImplementation(({queryKey})=>
             queryKey[0]==='couponInventory'
             ? {data:[{code:'SALE10', discountPercent:10, stock:0}], isLoading:false}
@@ -39,6 +39,6 @@ describe('Coupons - tab toggle', ()=>{
         );
         render(<Coupons/>);
         await userEvent.click(screen.getByRole('button', {name:/inventory/i}));
-        expect(await screen.findByText(/out of stock/i)).toBeInTheDocument();
+        expect(await screen.findByText(/SALE10/i)).not.toBeInTheDocument();
     })
 })
