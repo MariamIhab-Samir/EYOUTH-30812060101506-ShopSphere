@@ -28,7 +28,7 @@ const getProducts = async (req, res)=>{
             const stats=statsByProduct[p.id];
             return{
                 ...p,
-                rating: stats? +(stats.total/stats.count).toFixed(1): 0,
+                rating: stats? stats.rating.toFixed(1): 0,
                 reviewContent: stats? stats.count:0
             }
         })

@@ -111,13 +111,14 @@ describe('Admin Catalog API', ()=>{
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toHaveProperty('error');            
-        })
-    });
+        });
 
-    it('returns 500 and logs failure if Prisma create throws', async()=>{
-        mockCreate.mockRejectedValue(new Error('Database Connection Lost'));
+        it('returns 409 and logs failure when a product with the same name already exists', async()=>{
+            const duplicateError = new Error('Unique constraint failed on the fields:(`name`)');
+            duplicateError.code = 'P2002';
+            mockCreate.mockRejectedValue(duplicateError);
 
-        const response = await request(app)
+            const response = await request(app)
                 .post('/api/auth/admin/products')
                 .set('Authorization', 'Bearer MOCK_ADMIN_TOKEN')
                 .field('name', 'Blocked Product')
@@ -126,14 +127,37 @@ describe('Admin Catalog API', ()=>{
                 .field('stock', 50)
                 .field('description', 'High quality product')
                 .attach('productImage', Buffer.from('fake-image-content'), 'test-image.jpg');
-
-        expect(response.statusCode).toBe(500);
+        
+        expect(response.statusCode).toBe(409);
         expect(response.body).toHaveProperty('error');
         expect(activityLogModal.create).toHaveBeenCalledWith(
             expect.objectContaining({
-                action:'ADMIN_PRODUCT_CREATED', status:'FAILURE', details:expect.objectContaining({httpStatus:500})
-            })
-        )
+                action:'ADMIN_PRODUCT_CREATED', status:'FAILURE', details:expect.objectContaining({httpStatus:409})
+                })
+            )
+        });
+
+        it('returns 500 and logs failure if Prisma create throws', async()=>{
+            mockCreate.mockRejectedValue(new Error('Database Connection Lost'));
+
+            const response = await request(app)
+                    .post('/api/auth/admin/products')
+                    .set('Authorization', 'Bearer MOCK_ADMIN_TOKEN')
+                    .field('name', 'Blocked Product')
+                    .field('price', 800)
+                    .field('category', 'Iphones')
+                    .field('stock', 50)
+                    .field('description', 'High quality product')
+                    .attach('productImage', Buffer.from('fake-image-content'), 'test-image.jpg');
+
+            expect(response.statusCode).toBe(500);
+            expect(response.body).toHaveProperty('error');
+            expect(activityLogModal.create).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    action:'ADMIN_PRODUCT_CREATED', status:'FAILURE', details:expect.objectContaining({httpStatus:500})
+                })
+            )
+        });
     });
 
     describe('PUT /api/admin/products/:id',()=>{

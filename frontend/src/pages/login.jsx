@@ -59,6 +59,11 @@ export default function Login(){
             }
         },
         onError:(err)=>{
+            if(err.response?.data?.redirectToAdminTab){
+                setActiveTab('admin');
+                setError(err.response.data.error);
+                return;
+                }
             setError(err.response?.data?.error || 'Invalid email or password combination')
                 }
             }

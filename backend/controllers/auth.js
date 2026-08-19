@@ -60,6 +60,14 @@ const adminAddProduct = async (req, res) => {
     return res.status(201).json({ success: true, product: newProduct });
   } catch (error) {
     console.error('Admin add product error:', error);
+    if(error.code==='P2002'){
+      activityLogModal.create({
+      action: 'ADMIN_PRODUCT_CREATED',
+      status: 'FAILURE',
+      details: {httpStatus:409, adminId: req.user?.userId?? null, productId: newProduct?.id??null}
+    }).catch(err=>console.error('Log bypass', err))
+    return res.status(409).json({ error: 'A product with this name already exists' });
+    }
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'FAILURE',

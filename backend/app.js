@@ -29,7 +29,7 @@ app.use(cors({
 }));
 const limiter= rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 200,
     standardHeaders: true,
     legacyHeaders: false
 });
@@ -50,7 +50,11 @@ app.use('/api/auth', authRouter);
 app.use('/api', authRouter);
 app.use('/api/orders', orderRouter);
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res) =>{
+        res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+}));
 app.use((err, req, res, next)=>{
     console.error('Unhandled error:', err);
     res.status(500).json({error:'Internal server error'})

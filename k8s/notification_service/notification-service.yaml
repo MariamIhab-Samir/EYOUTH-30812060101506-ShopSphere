@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: code-copy-copy2-copy-notification_service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5002
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_USER}
+            - name: POSTGRES_PASSWORD_ENCODED
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_PASSWORD_ENCODED}
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_DB}
+            - name: DATABASE_URL
+              value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD_ENCODED)@notification-postgres:5432/$(POSTGRES_DB)"
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: SMTP_HOST}
+            - name: SMTP_PORT
+              valueFrom:
+                  secretKeyRef: {name: notification-secrets, key: SMTP_PORT}
+            - name: SMTP_SECURE
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: SMTP_SECURE}
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: SMTP_USER}
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: SMTP_PASS}
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: WEBHOOK_SECRET}
+            - name: CRON_SECRET
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: CRON_SECRET}
+            - name: EMAIL_FROM
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: EMAIL_FROM}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - port: 5002
+      targetPort: 5002

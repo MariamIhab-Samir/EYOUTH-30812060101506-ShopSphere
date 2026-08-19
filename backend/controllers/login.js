@@ -45,7 +45,19 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
-        
+        if (!isAdminTab && user.role === 'ADMIN') {
+            activityLogModal.create({
+                action: 'LOGIN_REDIRECT_ADMIN',
+                status: 'FAILURE',
+                details: { httpStatus:403, userId: user.id, email: user.email, attemptedAccess: 'user tab', reason: 'Admin must use Admin tab' }
+            }).catch(err => console.error('Error logging activity:', err));
+
+            return res.status(403).json({ 
+                error: 'You have an admin account. Please use the Admin tab to log in',
+                redirectToAdminTab: true 
+            });
+        }
+
         if (isAdminTab && user.role !== 'ADMIN') {
             activityLogModal.create({
                 user: { id: user.id, email: user.email },

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+        - name: review-service
+          image: code-copy-copy2-copy-review_service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5001
+          env:
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef: {name: review-secrets, key: MONGO_USER}
+            - name: MONGO_PASSWORD_ENCODED
+              valueFrom:
+                secretKeyRef: {name: review-secrets, key: MONGO_PASSWORD_ENCODED}
+            - name: MONGO_URI
+              value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD_ENCODED)@review-mongo:27017"
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef: {name: review-secrets, key: WEBHOOK_SECRET}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+spec:
+  selector:
+    app: review-service
+  ports:
+    - port: 5001
+      targetPort: 5001
