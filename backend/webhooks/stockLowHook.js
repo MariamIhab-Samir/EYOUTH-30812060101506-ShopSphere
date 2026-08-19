@@ -1,6 +1,7 @@
 const {PrismaClient}=require('@prisma/client');
 const {buildStockLowEmail}=require('../emails/stockLow');
-const {sendEmail}=require('../util/mailer')
+const {sendEmail}=require('../util/mailer');
+const activityLogModal=require('../config/activityLog')
 const prisma=new PrismaClient();
 
 const handleStockLowWebhook=async(req, res)=>{

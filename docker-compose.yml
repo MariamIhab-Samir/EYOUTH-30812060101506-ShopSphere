@@ -69,6 +69,7 @@ services:
       REVIEW_SERVICE_URL: http://review_service:5001
       LOW_STOCK_THRESHOLD: ${LOW_STOCK_THRESHOLD}
       ADMIN_ALERT_EMAIL: ${ADMIN_ALERT_EMAIL}
+      CRON_SECRET: ${CRON_SECRET}
     ports:
       - "5000:5000"
     depends_on:
@@ -101,13 +102,17 @@ services:
       SMTP_SECURE: ${SMTP_SECURE}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
+      CRON_SECRET: ${CRON_SECRET}
     ports:
       - "5002:5002"
     depends_on:
       - notification_postgres
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5000/api
     container_name: lionera_frontend_copy
     restart: always
     ports:

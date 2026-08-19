@@ -55,7 +55,7 @@ export default function Coupons(){
                                             <span style={couponStyles.discount}>{coupon.discountPercent}% Off</span>
                                         </div>
                                     ))}
-                                    <p style={couponStyles.note}>Each coupon can be used once per account.</p>
+                                    <p style={couponStyles.note}>Coupons are limited to your stock.</p>
                                 </span>
                             )
                         )}
@@ -65,7 +65,7 @@ export default function Coupons(){
                                 <p style={couponStyles.emptyMsg}>Loading inventory...</p>
                             ):(
                                 <div>
-                                    {inventory.map((coupon)=>(
+                                    {inventory.filter(coupon=> coupon.stock>0).map((coupon)=>(
                                         <div key={coupon.code} style={couponStyles.row}>
                                             <span style={couponStyles.code}>{coupon.code}({coupon.discountPercent}%)</span>
                                             <span style={{

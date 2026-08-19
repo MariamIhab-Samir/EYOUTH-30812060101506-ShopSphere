@@ -12,6 +12,7 @@ export default function Cart({}){
     const [errorMessage, setErrorMessage]=useState('');
     const [loading, setLoading]=useState(false);
     const [appliedCoupon, setAppliedCoupon]=useState(null);
+    const [typedCouponCode, setTypedCouponCode]=useState('');
     const{cartItems, updateQuantity, removeItem, totalCost, clearCart}=useCart();
     const discountedTotal=appliedCoupon
         ? (totalCost*(1-appliedCoupon.discount/100)) : totalCost;
@@ -20,6 +21,25 @@ export default function Cart({}){
             setErrorMessage('Cannot checkout an empty cart. Please add items to your cart before proceeding to checkout.');
             setTimeout(()=> setErrorMessage(''), 3000);
             return;
+        }
+        let couponToUse=appliedCoupon;
+        const trimmedTyped=typedCouponCode.trim();
+        const hasUnappliedCode=trimmedTyped && (!appliedCoupon || appliedCoupon.code !== trimmedTyped);
+        if(hasUnappliedCode){
+            const wantstoApply=window.confirm(
+                `You entered coupon code '${trimmedTyped}' but haven't applied it. Apply it before checking out?`
+            );
+            if(wantstoApply){
+                try{
+                    const res=await api.post('/coupons/validate', {code: trimmedTyped});
+                    couponToUse={code: res.data.code, discount: res.data.discount};
+                    setAppliedCoupon(couponToUse)
+                }catch(err){
+                    setErrorMessage(err.response?.data?.error || 'Invalid coupon code');
+                    setTimeout(()=>setErrorMessage(''), 3000);
+                    return;
+                }
+            }
         }
         setLoading(true);
 
@@ -30,7 +50,7 @@ export default function Cart({}){
             }));
         
 
-        await api.post('/orders', {items: itemsToStore, couponCode:appliedCoupon?.code});
+        await api.post('/orders', {items: itemsToStore, couponCode:couponToUse?.code});
 
         queryClient.invalidateQueries({queryKey:['products']});
         queryClient.invalidateQueries({queryKey:['orders']});
@@ -115,7 +135,7 @@ export default function Cart({}){
                         )}
                     </span>
                 </div>
-                <Coupon onApply={setAppliedCoupon}></Coupon>
+                <Coupon onApply={setAppliedCoupon} onCodeChange={setTypedCouponCode}></Coupon>
                 <button
                     onClick={handleCheckout}
                     disabled={loading}

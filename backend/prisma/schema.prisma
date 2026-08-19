@@ -80,7 +80,6 @@ model CouponRedemption{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
   redeemedAt DateTime @default(now())
-  @@unique([userId, couponId])
 }
 model Notification{
   id Int @id @default(autoincrement())

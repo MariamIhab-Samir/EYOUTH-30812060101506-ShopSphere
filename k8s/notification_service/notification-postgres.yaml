@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notification-postgres-pvc
+spec:
+  accessModes: 
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-postgres
+  template:
+    metadata:
+      labels:
+        app: notification-postgres
+    spec:
+      containers:
+        - name: notification-postgres
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_USER}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_PASSWORD}
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef: {name: notification-secrets, key: POSTGRES_DB}
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: notification-postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: notification-postgres-storage
+          persistentVolumeClaim:
+            claimName: notification-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-postgres
+spec:
+  selector:
+    app: notification-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

@@ -1,13 +1,18 @@
 import {useState} from 'react';
 import api from '../api/axios';
 
-export default function Coupon({onApply}){
+export default function Coupon({onApply, onCodeChange}){
     const [code, setCode]=useState('');
     const [status, setStatus]=useState(null);
     const [message, setMessage]=useState('');
 
     const handleApply=async()=>{
-        if(!code.trim()) return;
+        if(!code.trim()){
+            setStatus('invalid');
+            setMessage('Please enter a coupon code before applying');
+            setTimeout(()=>setMessage(''), 3000)
+            return;
+        }
         setStatus('checking');
         setMessage('');
         try{
@@ -28,7 +33,10 @@ export default function Coupon({onApply}){
             <div style={couponStyles.inputRow}>
             <input
             type='text' placeholder='Coupon code' value={code}
-            onChange={(e)=>setCode(e.target.value)}>
+            onChange={(e)=>{
+                setCode(e.target.value);
+                onCodeChange?.(e.target.value)
+                }}>
             </input>
             <button onClick={handleApply} disabled={status==='checking'}
                 style={{...couponStyles.applyBtn, opacity: status==='checking'? 0.6:1}}>
