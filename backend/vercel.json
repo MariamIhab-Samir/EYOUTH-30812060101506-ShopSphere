@@ -1,5 +1,8 @@
 {
     "crons":[
         {"path": "/api/cron/releaseExpired", "schedule": "0 3 * * *"}
+    ],
+    "rewrites": [
+        {"source": "(.*)", "destination": "/app.js"}
     ]
 }
