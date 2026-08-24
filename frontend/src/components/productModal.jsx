@@ -51,8 +51,8 @@ export default function ProductModal({product, onClose, onSuccess}) {
             
             const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
             const endpoint = isEditMode 
-            ? `http://localhost:5000/api/admin/products/${product.id}`
-            : `http://localhost:5000/api/admin/products`;
+            ? `${baseUrl}/api/admin/products/${product.id}`
+            : `${baseUrl}/api/admin/products`;
 
             const response = await fetch(endpoint, {
                 method: isEditMode ? 'PUT': 'POST',
