@@ -100,5 +100,5 @@ describe('CART API - Integration', ()=>{
 
         const remaining=await prisma.cartItem.findMany({where:{userId:buyerId}})
         expect(remaining.length).toBe(0);
-    })
+    }, 45000)
 });

@@ -133,6 +133,3 @@
 | Auto-scaling | Adjusts replica count based on load | More backend Pods spun up automatically during high traffic |
 <<<<<<< HEAD
 # testing CI ##
-=======
-# testing CI #########
->>>>>>> 0582cf2 (Fix production product adding 4)
