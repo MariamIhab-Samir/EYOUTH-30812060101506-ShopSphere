@@ -1,4 +1,4 @@
-const {createClient}=require('@supaase/supabase-js');
+const {createClient}=require('@supabase/supabase-js');
 const path=require('path');
 
 const supabase=createClient(

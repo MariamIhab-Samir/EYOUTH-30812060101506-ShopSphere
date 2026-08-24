@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
+const {uploadProductImage} = require('../util/uploadToSupabase')
 const prisma = new PrismaClient();
 
 const verifyAdminRole = (req, res) => {
@@ -23,6 +24,10 @@ const adminAddProduct = async (req, res) => {
     if(!req.file){
       return res.status(400).json({error: 'Product image is required.'})
     }
+
+    const imageUrl=process.env.NODE_ENV === 'production'
+      ? await uploadProductImage(req.file)
+      : `/uploads/products/${req.file.filename}`;
 
     newProduct = await prisma.product.create({
       data: { name,
@@ -91,6 +96,9 @@ const adminEditProduct = async (req, res) => {
       return res.status(404).json({ error: 'Target product not found.' });
     }
 
+    const imageUrl=process.env.NODE_ENV === 'production'
+      ? await uploadProductImage(req.file)
+      : `/uploads/products/${req.file.filename}`;
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
@@ -100,7 +108,7 @@ const adminEditProduct = async (req, res) => {
         stock: stock !== undefined ? parseInt(stock, 10) : undefined,
         category: category || undefined,
         discount: discount !== undefined ? parseInt(discount, 10): undefined,
-        image: req.file ? `/uploads/products/${req.file.filename}`: undefined
+        image: req.file ? (process.env.NODE_ENV === 'production' ? await uploadProductImage(req.file): `/uploads/products/${req.file.filename}`) : undefined
       }
     });
 
