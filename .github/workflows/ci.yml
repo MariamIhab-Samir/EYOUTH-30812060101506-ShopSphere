@@ -42,6 +42,7 @@ jobs:
           CRON_SECRET: ${{secrets.CRON_SECRET}}
           SUPABASE_URL: ${{secrets.SUPABASE_URL}}
           SUPABASE_SERVICE_ROLE_KEY: ${{secrets.SUPABASE_SERVICE_ROLE_KEY}}
+          SESSION_URL: ${{secrets.SESSION_URL}}
   test-frontend:
     environment: Preview – project5_final_frontend
     runs-on: ubuntu-latest

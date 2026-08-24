@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
+const prisma=new PrismaClient();
 const sessionPrisma = new PrismaClient({
     datasources: {db: {url: process.env.SESSION_URL}}
 });
