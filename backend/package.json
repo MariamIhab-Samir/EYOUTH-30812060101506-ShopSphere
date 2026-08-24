@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.11.0",
+    "@supabase/supabase-js": "^2.112.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
@@ -44,9 +45,11 @@
     "node": ">=18.0.0"
   },
   "liscense": "ISC",
-  "jest":{
+  "jest": {
     "testTimeout": 15000,
-    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
     "globalTeardown": "<rootDir>/jest.globalTeardown.js"
   }
 }
