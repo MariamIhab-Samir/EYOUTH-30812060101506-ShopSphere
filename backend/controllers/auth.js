@@ -96,9 +96,6 @@ const adminEditProduct = async (req, res) => {
       return res.status(404).json({ error: 'Target product not found.' });
     }
 
-    const imageUrl=process.env.NODE_ENV === 'production'
-      ? await uploadProductImage(req.file)
-      : `/uploads/products/${req.file.filename}`;
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
