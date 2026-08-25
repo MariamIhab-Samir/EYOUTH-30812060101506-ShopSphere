@@ -108,18 +108,27 @@ services:
     depends_on:
       - notification_postgres
 
-  frontend:
+  frontend-aws:
     build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:5000/api
+    environment:
+      - API_URL: http://localhost:5000/api
     container_name: lionera_frontend_copy
     restart: always
     ports:
       - "3000:80"
     depends_on:
       - backend
-
+  frontend-gcp:
+    build:
+      context: ./frontend
+    environment:
+      - API_URL: http://localhost:5000/api
+    container_name: lionera_frontend_copy
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
 volumes:
   postgres_data:
   notification_postgres_data:

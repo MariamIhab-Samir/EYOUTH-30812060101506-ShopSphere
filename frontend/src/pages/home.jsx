@@ -14,6 +14,7 @@ import Profile from './profile';
 import ProductComments from './comment';
 import {useProducts} from '../hooks/useProducts';
 import {useQueryClient} from '@tanstack/react-query';
+import {API_URL} from '../config';
 
 export default function Home({setGlobalScreen}) {
     const navigate=useNavigate();
@@ -84,8 +85,8 @@ export default function Home({setGlobalScreen}) {
 
         try{
             const token= localStorage.getItem('token');
-            const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
-            const response = await fetch (`${baseUrl}/api/admin/products/${productId}`, {
+            //const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
+            const response = await fetch (`${API_URL}/admin/products/${productId}`, {
                 method: 'DELETE',
                 headers: {'Authorization': `Bearer ${token}`}
             });

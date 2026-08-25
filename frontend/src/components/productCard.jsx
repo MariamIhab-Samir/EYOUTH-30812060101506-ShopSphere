@@ -1,5 +1,6 @@
 import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
+import {API_URL} from '../config';
 
 export default function ProductCard({ product, onAddToCart, onEditProduct, onDeleteProduct, onViewReviews}) {
         const location = useLocation();
@@ -26,7 +27,7 @@ export default function ProductCard({ product, onAddToCart, onEditProduct, onDel
     const getImageUrl=(image)=>{
         if(!image) return null;
         if(image.startsWith('/uploads')){
-            const baseUrl=import.meta.env.VITE_API_URL|| 'http://localhost:5000/api';
+            const baseUrl= API_URL;
             return `${baseUrl}${image}`
         }
         return image;

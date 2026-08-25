@@ -36,7 +36,7 @@ const adminAddProduct = async (req, res) => {
         stock: parseInt(stock, 10),
         category: category || undefined,
         discount: discount !== undefined ? parseInt(discount, 10): undefined,
-        image: `/uploads/products/${req.file.filename}`
+        image: imageUrl
       }
     });
 

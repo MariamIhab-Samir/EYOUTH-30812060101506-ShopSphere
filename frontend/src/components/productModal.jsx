@@ -49,10 +49,10 @@ export default function ProductModal({product, onClose, onSuccess}) {
             if (formData.description) payload.append('description', formData.description);
             if(imageFile) payload.append('productImage', imageFile);
             
-            const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
+            //const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
             const endpoint = isEditMode 
-            ? `${baseUrl}/api/admin/products/${product.id}`
-            : `${baseUrl}/api/admin/products`;
+            ? `${API_URL}/admin/products/${product.id}`
+            : `${API_URL}/admin/products`;
 
             const response = await fetch(endpoint, {
                 method: isEditMode ? 'PUT': 'POST',
