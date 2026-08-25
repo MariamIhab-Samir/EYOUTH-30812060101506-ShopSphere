@@ -38,12 +38,16 @@ const createOrder = async (req, res) => {
                 if(!coupon){
                     throw new Error('Coupon not found')
                 }
-                if(coupon.stock<=0){
-                    throw new Error('Coupon is out of stock')
-                }
                 const isExpired= coupon.expiresAt && new Date(coupon.expiresAt)<new Date();
                 if(isExpired){
                     throw new Error('Coupon has expired')
+                }
+                const userRedemptionCount=await tx.couponRedemption.count({
+                    where: {userId, couponId: coupon.id}
+                })
+                const remainingForUser=coupon.stock-userRedemptionCount
+                if(remainingForUser <= 0){
+                    throw new Error('Coupon stock exhausted for this user')
                 }
                 appliedDiscount = coupon.discountPercent;
                 redeemedCouponId = coupon.id;
@@ -68,10 +72,6 @@ const createOrder = async (req, res) => {
             });
 
             if(redeemedCouponId){
-                await tx.coupon.update({
-                    where:{id: redeemedCouponId},
-                    data: {stock: {decrement: 1}}
-                })
                 await tx.couponRedemption.create({
                     data: {userId, couponId: redeemedCouponId}
                 })

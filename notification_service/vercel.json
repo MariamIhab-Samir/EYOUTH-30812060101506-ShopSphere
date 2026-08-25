@@ -1,5 +1,8 @@
 {
     "crons":[
         {"path": "/api/cron/sendPromoEmails", "schedule": "0 9 * * *"}
+    ],
+    "rewrites": [
+        { "source": "/(.*)", "destination": "/app.js"}
     ]
 }

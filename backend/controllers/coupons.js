@@ -23,7 +23,7 @@ const getCouponInventory=async(req, res)=>{
         return res.status(200).json({coupons})
     }catch(err){
         console.error('Get coupon inventory error:', err);
-        return res.status(200).json({error: 'Failed to load coupon inventory'});
+        return res.status(500).json({error: 'Failed to load coupon inventory'});
     }
 };
 
