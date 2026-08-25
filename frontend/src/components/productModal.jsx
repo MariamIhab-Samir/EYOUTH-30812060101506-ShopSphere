@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {API_URL} from '../config';
 
 export default function ProductModal({product, onClose, onSuccess}) {
     const isEditMode= Boolean(product);
@@ -25,10 +26,12 @@ export default function ProductModal({product, onClose, onSuccess}) {
     };
 
     const handleSubmit=async(e)=>{
+        console.log('HANDLESUBMIT FIRED');
         e.preventDefault();
         setError('');
 
         const {name, price, stock} = formData;
+        console.log('FORM DATA AT SUBMIT:', formData);
         if(!name|| !price || !stock){
             setError('Name, price and stock are required')
             return;
@@ -48,12 +51,10 @@ export default function ProductModal({product, onClose, onSuccess}) {
             if (formData.category) payload.append('category', formData.category);
             if (formData.description) payload.append('description', formData.description);
             if(imageFile) payload.append('productImage', imageFile);
-            
-            const baseUrl=import.meta.env.VITE_API_URL || 'http://localhost:5000'
             const endpoint = isEditMode 
-            ? `${baseUrl}/api/admin/products/${product.id}`
-            : `${baseUrl}/api/admin/products`;
-
+            ? `${API_URL}/admin/products/${product.id}`
+            : `${API_URL}/admin/products`;
+            console.log('ENDPOINT:', endpoint);
             const response = await fetch(endpoint, {
                 method: isEditMode ? 'PUT': 'POST',
                 headers: {'Authorization': `Bearer ${token}`},
@@ -61,12 +62,14 @@ export default function ProductModal({product, onClose, onSuccess}) {
             });
 
             const data = await response.json();
+            console.log('RESPONSE STATUS', response.status, 'BODY:', data);
             if(!response.ok){
                 throw new Error(data.error || 'Failed to save product')
             }
 
             onSuccess(data.product);
         } catch(err){
+            console.log('CAUGHT ERROR', err.message)
             setError(err.message);
         }finally{
             setLoading(false);

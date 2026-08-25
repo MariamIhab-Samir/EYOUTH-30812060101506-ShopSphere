@@ -4,7 +4,7 @@ const fs=require('fs');
 
 const useLocalDisk=process.env.NODE_ENV !== 'production';
 
-let storgae;
+let storage;
 if (useLocalDisk){
     const uploadDir=path.join(__dirname, '..', 'uploads', 'products' );
     if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive:true});
@@ -20,11 +20,12 @@ if (useLocalDisk){
 }else{
     storage=multer.memoryStorage();
 }
-const uploadDir=path.join(__dirname, '..', 'uploads', 'products');
-if(!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir, {recursive:true})
+if (useLocalDisk){
+    const uploadDir=path.join(__dirname, '..', 'uploads', 'products');
+    if(!fs.existsSync(uploadDir)){
+        fs.mkdirSync(uploadDir, {recursive:true})
+    }
 }
-
 const fileFilter=(req,file,cb)=>{
     const allowedExtensions=/jpeg|jpg|png|webp/;
     const extname=allowedExtensions.test(path.extname(file.originalname).toLowerCase());

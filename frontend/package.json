@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node main.js",
     "dev": "vite",
+    "dev:aws": "vite --mode aws",
+    "dev:gcp": "vite --mode gcp",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
