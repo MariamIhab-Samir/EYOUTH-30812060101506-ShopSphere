@@ -8,6 +8,8 @@ const supabase=createClient(
 
 async function uploadProductImage(file){
     const filename=`${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+    console.log('SUPABASE_URL:', JSON.stringify(process.env.SUPABASE_URL));
+    console.log('UPLOAD FILENAME:', filename)
     const {error}=await supabase.storage
         .from('product-images')
         .upload(filename, file.buffer, {contentType: file.mimetype});
