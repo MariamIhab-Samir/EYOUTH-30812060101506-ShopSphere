@@ -94,7 +94,7 @@ const startServer = async () => {
 
     } catch (error) {
         
-        logerror('error', `[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
+        log('error', `[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
             activityLogModal.create({
                 action: 'UNHANDLED_APP_ERROR',
                 status: 'FAILURE',
