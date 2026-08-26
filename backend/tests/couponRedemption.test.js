@@ -4,6 +4,7 @@ const mockCartItemDeleteMany=jest.fn()
 const mockCartItemFindMany=jest.fn() 
 const mockCouponFindUnique=jest.fn() 
 const mockCouponUpdate=jest.fn() 
+const mockCouponRedemptionCount=jest.fn() 
 const mockCouponRedemptionCreate=jest.fn() 
 const mockOrderCreate=jest.fn() 
 const mockTopLevelOrderFindUnique=jest.fn().mockResolvedValue({id:1}) 
@@ -53,6 +54,7 @@ describe('POST /api/orders', ()=>{
         mockCartItemFindMany.mockReset()
         mockCouponFindUnique.mockReset() 
         mockCouponUpdate.mockReset()
+        mockCouponRedemptionCount.mockReset()
         mockCouponRedemptionCreate.mockReset()
         mockOrderCreate.mockReset()
         global.fetch.mockReset()
@@ -66,8 +68,8 @@ describe('POST /api/orders', ()=>{
             const tx={
                 product:{findUnique:mockProductFindUnique},
                 cartItem:{deleteMany:mockCartItemDeleteMany, findMany:mockCartItemFindMany},
-                coupon:{findUnique: mockCouponFindUnique, update: mockCouponUpdate},
-                couponRedemption:{create: mockCouponRedemptionCreate},
+                coupon:{findUnique: mockCouponFindUnique},
+                couponRedemption:{count: mockCouponRedemptionCount, create: mockCouponRedemptionCreate},
                 order: {create: mockOrderCreate}
             };
             return fn(tx);
@@ -99,16 +101,17 @@ describe('POST /api/orders', ()=>{
         expect(res.body.error).toBe('Coupon not found')
     });
 
-    it('rejects an out-of-stock coupon', async()=>{
+    it('rejects a coupon once the user has exhausted their personal redemption allowance', async()=>{
         mockCouponFindUnique.mockResolvedValue({
             id: 1, code: 'SALE10', stock: 0, discountPercent: 10, expiresAt: null
         });
+        mockCouponRedemptionCount.mockResolvedValue(2)
         const res=await request(app)
             .post('/api/orders')
             .set('Authorization', 'Bearer MOCK_USER_TOKEN')
-            .send({couponCode: 'SALLE10'});
+            .send({couponCode: 'SALE10'});
         expect(res.status).toBe(400);
-        expect(res.body.error).toBe('Coupon is out of stock')
+        expect(res.body.error).toBe('Coupon stock exhausted for this user')
     });
 
     it('rejects an expired coupon', async()=>{
@@ -127,6 +130,7 @@ describe('POST /api/orders', ()=>{
         mockCouponFindUnique.mockResolvedValue({
                 id: 7, code: 'SALE10', stock: 5, discountPercent: 10, expiresAt: null
         });
+        mockCouponRedemptionCount.mockResolvedValue(2)
         const res=await request(app)
             .post('/api/orders')
             .set('Authorization', 'Bearer MOCK_USER_TOKEN')
@@ -138,8 +142,6 @@ describe('POST /api/orders', ()=>{
                 totalPrice: 180
             })
         }));
-        expect(mockCouponUpdate).toHaveBeenCalledWith({where: {id:7},
-            data: {stock: {decrement:1}}});
         expect(mockCouponRedemptionCreate).toHaveBeenCalledWith({
             data: {userId: 1, couponId:7}
         })

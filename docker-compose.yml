@@ -112,7 +112,7 @@ services:
     build:
       context: ./frontend
     environment:
-      - API_URL: http://localhost:5000/api
+      API_URL: http://localhost:5000/api
     container_name: lionera_frontend_copy
     restart: always
     ports:
@@ -123,12 +123,13 @@ services:
     build:
       context: ./frontend
     environment:
-      - API_URL: http://localhost:5000/api
+      API_URL: http://localhost:5010/api
     container_name: lionera_frontend_copy
     restart: always
     ports:
-      - "3000:80"
+      - "3010:80"
     depends_on:
+      - backend
 volumes:
   postgres_data:
   notification_postgres_data:
