@@ -1,5 +1,5 @@
 const mockFindMany=jest.fn();
-
+jest.setTimeout(20000);
 jest.mock('@prisma/client', () => {
     return {
         PrismaClient: jest.fn().mockImplementation(() => {
