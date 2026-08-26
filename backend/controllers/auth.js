@@ -40,7 +40,6 @@ const adminAddProduct = async (req, res) => {
       }
     });
 
-    console.log('APP_URL at fetch time:', process.env.APP_URL)
     fetch(`${process.env.APP_URL}/api/webhooks/product-created`, {
       method: 'POST',
       headers:{

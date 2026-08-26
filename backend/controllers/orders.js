@@ -80,7 +80,7 @@ const createOrder = async (req, res) => {
                 where: { userId }
             });
             return newOrder;
-        });
+        }, {maxWait: 10000, timeout: 10000});
 
         activityLogModal.create({
             action: 'CHECKOUT',
