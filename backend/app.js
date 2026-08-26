@@ -87,14 +87,14 @@ const startServer = async () => {
 
         if (process.env.NODE_ENV !== 'test'){
             app.listen(PORT, () => {
-                log(info, `[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
-                log(info, `Health Check active at http://localhost:${PORT}/health`);
+                log('info', `[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
+                log('info', `Health Check active at http://localhost:${PORT}/health`);
             });
         }
 
     } catch (error) {
         
-        logerror('error', `[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
+        log('error', `[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
             activityLogModal.create({
                 action: 'UNHANDLED_APP_ERROR',
                 status: 'FAILURE',
