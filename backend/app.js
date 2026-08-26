@@ -87,8 +87,8 @@ const startServer = async () => {
 
         if (process.env.NODE_ENV !== 'test'){
             app.listen(PORT, () => {
-                log(info, `[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
-                log(info, `Health Check active at http://localhost:${PORT}/health`);
+                log('info', `[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
+                log('info', `Health Check active at http://localhost:${PORT}/health`);
             });
         }
 
