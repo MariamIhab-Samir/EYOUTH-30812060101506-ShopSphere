@@ -166,7 +166,7 @@ const updateCartItem = async (req, res) => {
         }
         return res.status(200).json({ message: 'Item quantity updated', success: true, cartItem: result });
     } catch (err) {
-        log('error', 'Update cart item error:',{userId, productId, errorMessage: err?.message?? String(err)});;
+        log('error', 'Update cart item error:',{userId, cartItemId, errorMessage: err?.message?? String(err)});;
         const isNotFoundError = err.message.includes('not found');
         const isStockError = err.message.includes('Insufficient stock') || err.message.includes('not found');
         const httpStatus = isNotFoundError ? 404 : isStockError ? 400 : 500;

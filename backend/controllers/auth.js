@@ -118,7 +118,7 @@ const adminEditProduct = async (req, res) => {
     }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(200).json({ success: true, product: updatedProduct });
-  } catch (error) {
+  } catch (err) {
     log ('error','Admin edit product failed', {errorMessage: err?.message?? String(err), adminId: req.user?.userId?? null})
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_UPDATED',
