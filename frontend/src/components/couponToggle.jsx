@@ -6,13 +6,13 @@ import PageLayout from '../components/pageLayout';
 export default function Coupons(){
     const [activeTab, setActiveTab] = useState('codes');
 
-    const{data: codes=[], isLoading: loadingCodes}=useQuery({
+    const{data: codes=[], isLoading: loadingCodes, isError: errorCodes}=useQuery({
         queryKey: ['couponCodes'],
         queryFn: async()=>(await api.get('/coupons/codes')).data.coupons,
         enabled: activeTab === 'codes'
     });
 
-    const {data: inventory=[], isLoading: loadingInventory} = useQuery({
+    const {data: inventory=[], isLoading: loadingInventory, isError: errorInventory} = useQuery({
         queryKey: ['couponInventory'],
         queryFn: async()=> (await api.get('/coupons/inventory')).data.coupons,
         enabled: activeTab === 'inventory'
@@ -47,8 +47,9 @@ export default function Coupons(){
                         {activeTab === 'codes' && (
                             loadingCodes ? (
                                 <p style={couponStyles.emptyMsg}>Loading coupon codes...</p>
-                            ):(
-                                <span>
+                            ): errorCodes ? (
+                                <p style={couponStyles.emptyMsg}>Unable to load coupon codes</p>
+                            ):( <span>
                                     {codes.map((coupon)=>(
                                         <div key={coupon.code} style={couponStyles.row}>
                                             <span style={couponStyles.code}>{coupon.code}({coupon.discountPercent}%)</span>
@@ -63,6 +64,8 @@ export default function Coupons(){
                         {activeTab === 'inventory' && (
                             loadingInventory ? (
                                 <p style={couponStyles.emptyMsg}>Loading inventory...</p>
+                            ): errorInventory ? (
+                                <p style={couponStyles.emptyMsg}>Unable to load coupon inventory</p>
                             ):(
                                 <div>
                                     {inventory.filter(coupon=> coupon.stock>0).map((coupon)=>(
