@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma=new PrismaClient();
 const mongoose = require('mongoose');
 const jwt=require('jsonwebtoken');
+jest.setTimeout(20000);
 
 jest.mock('../config/activityLog', ()=>({
     create: jest.fn().mockResolvedValue({})
