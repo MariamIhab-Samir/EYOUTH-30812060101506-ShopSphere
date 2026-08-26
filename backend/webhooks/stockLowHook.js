@@ -1,7 +1,8 @@
 const {PrismaClient}=require('@prisma/client');
 const {buildStockLowEmail}=require('../emails/stockLow');
 const {sendEmail}=require('../util/mailer');
-const activityLogModal=require('../config/activityLog')
+const activityLogModal=require('../config/activityLog');
+const {log}= require('../util/logger');
 const prisma=new PrismaClient();
 
 const handleStockLowWebhook=async(req, res)=>{
@@ -36,15 +37,15 @@ const handleStockLowWebhook=async(req, res)=>{
             action:'STOCK_LOW_WEBHOOK',
             status: 'SUCCESS',
             details: {httpStatus:200, productId: product.id, stock: product.stock}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({success:true, message:'Low Stock alert sent'});
     }catch(err){
-        console.error('Stock low webhook error:', err);
+        log('error','Stock low webhook failed:', {productId: req.body?.productId, errorMessage: err?.message?? String(err)});
         activityLogModal.create({
             action:'STOCK_LOW_WEBHOOK',
             status: 'FAILURE',
             details: {httpStatus:500, productId: req.body?.productId, error: err.message}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({error:'Failed to process stock-low webhook'})
     }
 };

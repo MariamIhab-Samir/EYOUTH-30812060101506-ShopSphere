@@ -3,7 +3,7 @@ const {buildOrderConfirmationEmail}=require('../emails/orderConfirmation');
 const {sendEmail}=require('../util/mailer');
 const activityLogModal=require('../config/activityLog');
 const prisma = new PrismaClient();
-
+const {log}= require('../util/logger');
 const handleOrderCreatedWebhook=async(req, res)=>{
     const secret=req.headers['x-webhook-secret'];
     if(secret!==process.env.WEBHOOK_SECRET){
@@ -40,15 +40,15 @@ const handleOrderCreatedWebhook=async(req, res)=>{
             action:'ORDER_CONFIRMATION_WEBHOOK',
             status: 'SUCCESS',
             details: {httpStatus:200, orderId: order.id}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({success:true, message:'Confirmation email sent'});
     }catch(err){
-        console.error('Order created webhook error:', err);
+        log('error','order created webhook failed:', {orderId: req.body?.orderId, errorMessage: err.message});
         activityLogModal.create({
             action:'ORDER_CONFIRMATION_WEBHOOK',
             status: 'FAILURE',
             details: {httpStatus:500, orderId: req.body?.orderId, error: err.message}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({error:'Failed to process order-created webhook'})
     }
 };

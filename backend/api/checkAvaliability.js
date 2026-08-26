@@ -1,5 +1,6 @@
 const {PrismaClient} =require('@prisma/client');
 const prisma=new PrismaClient();
+const {log}= require('../util/logger');
 
 async function checkAvailability (req, res){
     if(req.method!=='GET'){
@@ -28,7 +29,7 @@ async function checkAvailability (req, res){
             requested: Number(quantity)
         });
     }catch(err){
-        console.error('Availability check error:', err);
+        log('error', 'avaliability check failed',{productId, quantity, errorMessage: err?.message?? String(err)});
         return res.status(500).json({error:'Failed to check availability'})
     }
 }

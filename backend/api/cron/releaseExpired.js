@@ -1,4 +1,5 @@
 const releaseExpiredReservations=require('../jobs/releaseExpiredReservations');
+const {log}= require('../../util/logger');
 
 module.exports=async(req,res)=>{
     if(req.headers['authorization']!==`Bearer ${process.env.CRON_SECRET}`){
@@ -7,11 +8,11 @@ module.exports=async(req,res)=>{
     try{
         const releasedCount=await releaseExpiredReservations();
         if(releasedCount>0){
-            console.log(`[Reservation Cleanup] Released ${releasedCount} expired cart reservation(s)`);
+            log('info', 'expired reservations released', {releasedCount});
         }
         return res.status(200).json({releasedCount})
     }catch(err){
-        console.error('[Reservation Cleanup] Failed to release expired reservations', err);
+        log('error', 'reservation cleanup failed',{errorMessage: err?.message?? String(err)});
         return res.status(500).json({error: 'Cleanup failed'})
     }
 }

@@ -4,6 +4,7 @@ const prisma=new PrismaClient();
 const sessionPrisma = new PrismaClient({
     datasources: {db: {url: process.env.SESSION_URL}}
 });
+const {log}= require('../util/logger');
 
 const createOrder = async (req, res) => {
     
@@ -86,7 +87,7 @@ const createOrder = async (req, res) => {
             action: 'CHECKOUT',
             status: 'SUCCESS',
             details: {httpStatus:201, userId, orderId: orderResult.id, total: orderResult.totalPrice }
-        }).catch(err => console.error('Logging bypass on order confirmation:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
         prisma.order.findUnique({
             where:{id:orderResult.id},
@@ -106,12 +107,11 @@ const createOrder = async (req, res) => {
         }).then(async(res)=>{
             if(!res.ok){
                 const body=await res.text();
-                console.error(`order-created webhook responded with ${res.status}`, body)
+                log('warn', 'order-created webhook responded with non-2xx status',{status: res.status, orderId: orderResult.id, responseBody: body})
             }else{
-                console.log('order-created webhook succeeded')
+                log('info', 'order-created webhook succeeded', {orderId: orderResult.id});
             }
-        }).catch(error=> console.error('order created webhook failed:', error))
-
+        }).catch(error=> log('error', 'order-created webhook failed',{orderId: orderResult.id, errorMessage: error?.message?? String(error)}));
         return res.status(201).json({
             success: true,
             message: 'Order placed successfully.',
@@ -119,18 +119,18 @@ const createOrder = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Checkout error execution path:', error.message);
+        log('warn', 'checkout rejected',{userId, reason: error.message})
         const isClientError=error.message.includes('empty') || error.message.includes('Coupon');
         if(!isClientError){
             activityLogModal.create({
                 action: 'CHECKOUT',
                 status: 'FAILURE',
                 details: {httpStatus:500, userId, error: error.message }
-            }).catch(err => console.error('Logging failure tracking catch:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         }
        
         if (isClientError) {
-            console.error('Checkout error due to empty cart:', error.message);
+            log('error', 'checkout failed',{userId, reason: error.message})
             return res.status(400).json({ error: error.message });
         }
 

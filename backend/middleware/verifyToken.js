@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const activityLogModal=require('../config/activityLog')
+const {log}= require('../util/logger');
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -26,7 +27,8 @@ const isAdmin = (req, res, next) => {
         activityLogModal.create({
                 action: 'ADMIN_ACTION_FORBIDDEN',
                 status: 'FAILURE',
-                details: {httpStatus:403, adminId: req.user?.userId?? null}})
+                details: {httpStatus:403, adminId: req.user?.userId?? null}
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(403).json({ error: 'Forbidden: Administrative Privileges Required' });
     }
 };

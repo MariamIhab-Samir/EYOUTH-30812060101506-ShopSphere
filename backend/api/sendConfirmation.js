@@ -3,6 +3,7 @@ const {sendEmail}=require('../util/mailer');
 const{PrismaClient}=require('@prisma/client');
 const prisma=new PrismaClient();
 const activityLogModal=require('../config/activityLog');
+const {log}= require('../util/logger');
 
 async function sendConfirmationEmail (req, res){
     if(req.method!=='POST'){
@@ -26,27 +27,27 @@ async function sendConfirmationEmail (req, res){
         if(!order){
             return res.status(404).json({error:'Order not found'})
         }
-        console.log('Order found:', order.id, order.user.email);
+        log('info', 'order found for confirmation email', {orderId: order.id});
         const{html}=buildOrderConfirmationEmail(order);
         await sendEmail({
             to:order.user.email,
             subject:`Order Confirmation #${order.id}`,
             html
         });
-        console.log('sendEmail resolved')
+        log('info', 'confirmation email sent', {orderId: order.id});
         activityLogModal.create({
             action:'CONFIRMATION_EMAIL_SENT',
             status: 'SUCCESS',
             details: {httpStatus: 200, orderId: order.id}
-        }).catch(err=>console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
         return res.status(200).json({success:true, message:'Confirmation email sent'})
     }catch(err){
-        console.error('Send confirmation email error:', err);
+        log('error', 'send confirmation email failed',{orderId: req.body?.orderId, errorMessage: err?.message?? String(err)});
         activityLogModal.create({
             action:'CONFIRMATION_EMAIL_SENT',
             status: 'FAILURE',
             details: {httpStatus: 500, orderId: req.body?.orderId, error: err.message}
-        }).catch(err=>console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
         return res.status(500).json({error:'Failed to send confirmation email'})
     }
 }

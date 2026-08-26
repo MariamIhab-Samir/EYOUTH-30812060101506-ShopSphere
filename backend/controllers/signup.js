@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken')
 const activityLogModal = require('../config/activityLog');
 const {sendWelcomeEmail}=require('../emails/welcome');
+const {log}= require('../util/logger');
 
 const prisma = new PrismaClient();
 const JWT_SECRET= process.env.JWT_SECRET || 'fallback_server_key';
@@ -29,7 +30,7 @@ const register = async (req, res) => {
         action:'USER_REGISTER_BLOCKED',
         status:'FAILURE',
         details:{httpStatus:403, email, reason: 'Underage'}
-      }).catch(err=>console.error('Log bypass', err))
+      }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
       return res.status(403).json({ error: 'Registration denied. You must be at least 16 years old to create an account.' });
     }
 
@@ -44,7 +45,7 @@ const register = async (req, res) => {
         action:'USER_REGISTER_BLOCKED',
         status:'FAILURE',
         details:{httpStatus:409, email, reason: 'Duplicate email'}
-      }).catch(err=>console.error('Log bypass', err))
+      }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
       return res.status(409).json({ error: 'A user with this email already exists.' });
     }
 
@@ -78,6 +79,7 @@ const register = async (req, res) => {
     try{
       await sendWelcomeEmail(newUser);
     }catch(mailErr){
+      log('warn', 'Welcome email failed', {userId, errorMessage: mailErr?.message?? String(mailErr)});
       console.error('Welcome email failed to send:', mailErr)
     }
     
@@ -87,25 +89,25 @@ const register = async (req, res) => {
           action: 'USER_REGISTER_SUCCESS',
           status: 'SUCCESS',
           details:{userId: String(newUser.id || ''), email: newUser.email || ''}
-        });
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
       }
     }catch (logErr){
-      console.error('Registration logging failed silently:', logErr);
+      log('error', 'registration logging failed silently', {errorMessage: logErr?.message?? String(logErr)});
     }
     activityLogModal.create({
         action:'USER_REGISTER',
         status:'SUCCESS',
         details:{httpStatus:201, email}
-      }).catch(err=>console.error('Log bypass', err))
+      }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(201).json({success: true, message:'Account created successfully.', user: newUser});
     
   } catch (error) {
-    console.error('Registration error:', error);
+    log('error', 'registration failed', {errorMessage: error?.message?? String(error)});
     activityLogModal.create({
         action:'USER_REGISTER',
         status:'FAILURE',
         details:{httpStatus:500}
-      }).catch(err=>console.error('Log bypass', err))
+      }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(500).json({ error: 'Internal server error during registration.'});
   }
 };

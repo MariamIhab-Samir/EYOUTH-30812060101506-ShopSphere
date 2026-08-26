@@ -2,6 +2,8 @@ const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
 const releaseExpiredReservations=require('../jobs/releaseExpiredReservations')
 const prisma = new PrismaClient();
+const {log}= require('../util/logger');
+
 const addToCart = async (req, res) => {
     const userId =req.user.userId;
     const {productId, quantity}=req.body;
@@ -38,12 +40,12 @@ const addToCart = async (req, res) => {
             action: 'CART_ITEM_ADDED',
             status: 'SUCCESS',
             details: {httpStatus:200, userId, productId, quantity }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
         const threshold=Number(process.env.LOW_STOCK_THRESHOLD) || 5;
         const stockAfter=result.updatedProduct.stock;
         const stockBefore=stockAfter + quantity;
-        console.log('stock check:', {stockBefore, stockAfter, threshold})
+        log('info', 'stock check', {stockBefore, stockAfter, threshold})
         if(stockBefore> threshold && stockAfter<= threshold){
             fetch(`${process.env.APP_URL}/api/webhooks/stock-low`, {
                 method:'POST',
@@ -55,15 +57,15 @@ const addToCart = async (req, res) => {
             }).then(async(res)=>{
                 if(!res.ok){
                     const body=await res.text();
-                    console.error(`stock-low webhook responded with ${res.status}`, body)
+                    log('warn', 'stock-low webhook responded with non-2xx status',{status: res.status, productId: result.updatedProduct.id, responseBody: body});
                 }else{
-                    console.log('stock-low webhook succeeded')
+                    log('info', 'stock-low webhook succeeded', {productId: result.updatedProduct.id});
                 }
-            }).catch(error=> console.error('stock-low webhook failed:', error))
+            }).catch(error=> log('error', 'stock-low webhook failed',{productId: result.updatedProduct.id, errorMessage: error?.message?? String(error)}))
         }
         return res.status(200).json({message:'Item added to cart', success:true, cartItem:result.CartItem});
     }catch (err) {
-        console.error('Add to cart error:', err);
+        log('error', 'Add to cart error:',{userId, productId, errorMessage: err?.message?? String(err)});
         const isNotFoundError = err.message.includes('not found');
         const isStockError = err.message.includes('Insufficient stock');
         const httpStatus = isNotFoundError ? 404 : isStockError ? 400 : 500;
@@ -73,7 +75,7 @@ const addToCart = async (req, res) => {
                 action: 'CART_ITEM_ADDED',
                 status: 'FAILURE',
                 details: {httpStatus:500, userId, productId, quantity, error: err.message }
-            }).catch(err => console.error('Log bypass:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         }
         return res.status(httpStatus).json({error: err.message || 'Internal server error'});
     }
@@ -92,14 +94,14 @@ const getCart = async (req, res) => {
             action: 'CART_RETRIEVED',
             status: 'SUCCESS',
             details: {httpStatus:200, userId, itemCount: cartItems.length }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({ cartItems });
     }catch (err) {
         activityLogModal.create({
             action: 'CART_RETRIEVED',
             status: 'FAILURE',
             details: {httpStatus:500, userId, error: err.message }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({ error: 'Internal server error' });
     }}
 
@@ -139,12 +141,12 @@ const updateCartItem = async (req, res) => {
             action: 'CART_ITEM_UPDATED',
             status: 'SUCCESS',
             details: {httpStatus:200, userId, cartItemId, newQuantity }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
         const threshold=Number(process.env.LOW_STOCK_THRESHOLD) || 5;
         const stockAfter=result.updatedProduct.stock;
         const stockBefore=stockAfter + result.delta;
-        console.log('stock check:', {stockBefore, stockAfter, threshold})
+        log('info', 'stock check', {stockBefore, stockAfter, threshold})
         if(stockBefore> threshold && stockAfter<= threshold){
             fetch(`${process.env.APP_URL}/api/webhooks/stock-low`, {
                 method:'POST',
@@ -156,15 +158,15 @@ const updateCartItem = async (req, res) => {
             }).then(async(res)=>{
                 if(!res.ok){
                     const body=await res.text();
-                    console.error(`stock-low webhook responded with ${res.status}`, body)
+                    log('warn', 'stock-low webhook responded with non-2xx status',{status: res.status, productId: result.updatedProduct.id, responseBody: body});
                 }else{
-                    console.log('stock-low webhook succeeded')
+                    log('info', 'stock-low webhook succeeded', {productId: result.updatedProduct.id});
                 }
-            }).catch(error=> console.error('stock-low webhook failed:', error))
+            }).catch(error=> log('error', 'stock-low webhook failed',{productId: result.updatedProduct.id, errorMessage: error?.message?? String(error)}))
         }
         return res.status(200).json({ message: 'Item quantity updated', success: true, cartItem: result });
     } catch (err) {
-        console.error('Update cart item error:', err);
+        log('error', 'Update cart item error:',{userId, cartItemId, errorMessage: err?.message?? String(err)});;
         const isNotFoundError = err.message.includes('not found');
         const isStockError = err.message.includes('Insufficient stock') || err.message.includes('not found');
         const httpStatus = isNotFoundError ? 404 : isStockError ? 400 : 500;
@@ -174,7 +176,7 @@ const updateCartItem = async (req, res) => {
                 action: 'CART_ITEM_UPDATED',
                 status: 'FAILURE',
                 details: {httpStatus: 500, userId, cartItemId, newQuantity, error: err.message }
-            }).catch(err => console.error('Log bypass:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         }
         return res.status(isNotFoundError ? 404 : isStockError ? 400 : 500).json({ error: err.message || 'Internal server error' });
     }
@@ -203,7 +205,7 @@ const removeFromCart = async (req, res) => {
             action: 'CART_ITEM_REMOVED',
             status: 'SUCCESS',
             details: {httpStatus:200, userId, cartItemId }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({ message: 'Item removed from cart', success: true });
     } catch (err) {
         const isNotFoundError= err.message.includes('not found');
@@ -215,7 +217,7 @@ const removeFromCart = async (req, res) => {
                 action: 'CART_ITEM_REMOVED',
                 status: 'FAILURE',
                 details: {httpStatus: 500, userId, cartItemId, error: err.message }
-            }).catch(err => console.error('Log bypass:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         }
         return res.status(httpStatus).json({ error: err.message || 'Internal server error' });
     }
@@ -238,14 +240,14 @@ const clearCart = async (req, res) => {
             action: 'CART_CLEARED',
             status: 'SUCCESS',
             details: {httpStatus:200, userId }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({ message: 'Cart cleared', success: true });
     } catch (err) {
         activityLogModal.create({
             action: 'CART_CLEARED',
             status: 'FAILURE',
             details: {httpStatus: 500, userId, error: err.message }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({ error: 'Internal server error' });
     }
 };

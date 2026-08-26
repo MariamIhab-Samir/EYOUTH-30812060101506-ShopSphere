@@ -2,19 +2,22 @@ const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
 const {uploadProductImage} = require('../util/uploadToSupabase')
 const prisma = new PrismaClient();
+const {log}= require('../util/logger');
 
 const verifyAdminRole = (req, res) => {
     if (!req.user || req.user.role !== 'ADMIN') {
       activityLogModal.create({
         action: 'ADMIN_ACTION_FORBIDDEN',
         status: 'FAILURE',
-        details: {httpStatus:403, adminId: req.user?.userId?? null}})
+        details: {httpStatus:403, adminId: req.user?.userId?? null}
+      }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
       res.status(403).json({ error: 'Forbidden. Administrative authorization required.' });
       return false;}
   return true;
 };
 
 const adminAddProduct = async (req, res) => {
+  if (!verifyAdminRole(req, res)) return;
   let newProduct;
   try {
     const { name, description, price, stock, category, discount} = req.body;
@@ -50,33 +53,33 @@ const adminAddProduct = async (req, res) => {
     }).then(async(res)=>{
         if(!res.ok){
           const body=await res.text();
-          console.error(`product-created webhook responded with ${res.status}`, body)
+          log('warn', 'product-created webhook responded with non-2xx status',{status: res.status, productId: newProduct.id, responseBody: body});
         }else{
-          console.log('product-created webhook succeeded')
+          log('info', 'product-created webhook succeeded', {productId: newProduct.id});
         }
-    }).catch(error=> console.error('product-created webhook failed:', error))
+    }).catch(err=> log('error', 'product-created webhook failed',{productId: newProduct.id, errorMessage: err?.message?? String(err)}))
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'SUCCESS',
       details: {httpStatus:201, adminId: req.user?.userId?? null, productId: newProduct.id }
-    }).catch(err => console.error('Log bypass:', err));
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(201).json({ success: true, product: newProduct });
   } catch (error) {
-    console.error('Admin add product error:', error);
+    log ('error','Admin add product failed', {errorMessage: error?.message?? String(error), adminId: req.user?.userId?? null})
     if(error.code==='P2002'){
       activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'FAILURE',
       details: {httpStatus:409, adminId: req.user?.userId?? null, productId: newProduct?.id??null}
-    }).catch(err=>console.error('Log bypass', err))
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(409).json({ error: 'A product with this name already exists' });
     }
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'FAILURE',
       details: {httpStatus:500, adminId: req.user?.userId?? null, productId: newProduct?.id??null }
-    }).catch(err=>console.error('Log bypass', err))
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(500).json({ error: 'Internal server error while creating product.' });
   }
 };
@@ -112,15 +115,16 @@ const adminEditProduct = async (req, res) => {
       action: 'ADMIN_PRODUCT_UPDATED',
       status: 'SUCCESS',
       details: {httpStatus:200, adminId: req.user?.userId?? null, productId: id }
-    }).catch(err => console.error('Log bypass:', err));
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(200).json({ success: true, product: updatedProduct });
-  } catch (error) {
-    console.error('Admin edit product error:', error);
+  } catch (err) {
+    log ('error','Admin edit product failed', {errorMessage: err?.message?? String(err), adminId: req.user?.userId?? null})
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_UPDATED',
       status: 'FAILURE',
-      details: {httpStatus:500, adminId: req.user?.userId?? null, productId: id }})
+      details: {httpStatus:500, adminId: req.user?.userId?? null, productId: id }
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(500).json({ error: 'Internal server error while modifying product.' });
   }
 };
@@ -142,15 +146,16 @@ const adminDeleteProduct = async (req, res) => {
       action: 'ADMIN_PRODUCT_DELETED',
       status: 'SUCCESS',
       details: {httpStatus:200, adminId: req.user?.userId?? null, productId: id }
-    }).catch(err => console.error('Log bypass:', err));
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(200).json({ success: true, message: 'Product deleted successfully.' });
   } catch (error) {
-    console.error('Admin delete product error:', error);
+    log ('error','Admin delete product failed', {errorMessage: error?.message?? String(error), adminId: req.user?.userId?? null})
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_DELETED',
       status: 'FAILURE',
-      details:{httpStatus:500, adminId: req.user?.userId?? null, productId: id }})
+      details:{httpStatus:500, adminId: req.user?.userId?? null, productId: id }
+    }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
     return res.status(500).json({ error: 'Internal server error while deleting product.' });
   }
 };
