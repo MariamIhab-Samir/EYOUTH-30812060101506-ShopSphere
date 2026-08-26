@@ -57,7 +57,7 @@ const adminAddProduct = async (req, res) => {
         }else{
           log('info', 'product-created webhook succeeded', {productId: newProduct.id});
         }
-    }).catch(error=> log('error', 'product-created webhook failed',{productId: newProduct.id, errorMessage: err?.message?? String(err)}))
+    }).catch(err=> log('error', 'product-created webhook failed',{productId: newProduct.id, errorMessage: err?.message?? String(err)}))
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_CREATED',
       status: 'SUCCESS',
@@ -65,7 +65,7 @@ const adminAddProduct = async (req, res) => {
     }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(201).json({ success: true, product: newProduct });
-  } catch (error) {
+  } catch (err) {
     log ('error','Admin add product failed', {errorMessage: err?.message?? String(err), adminId: req.user?.userId?? null})
     if(error.code==='P2002'){
       activityLogModal.create({
@@ -149,7 +149,7 @@ const adminDeleteProduct = async (req, res) => {
     }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(200).json({ success: true, message: 'Product deleted successfully.' });
-  } catch (error) {
+  } catch (err) {
     log ('error','Admin delete product failed', {errorMessage: err?.message?? String(err), adminId: req.user?.userId?? null})
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_DELETED',
