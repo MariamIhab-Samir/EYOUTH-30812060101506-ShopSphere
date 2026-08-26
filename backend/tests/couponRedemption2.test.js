@@ -77,6 +77,8 @@ describe('POST /api/orders - coupon redemption - Integration', ()=>{
         expect(res.body.order.totalPrice).toBe(1440);
 
         const coupon=await prisma.coupon.findUnique({where:{code:couponCode}});
-        expect(coupon.stock).toBe(0);
+        expect(coupon.stock).toBe(1);
+        const redemption=await prisma.couponRedemption.findFirst({where:{userId, couponId:coupon.id}})
+        expect(redemption).not.toBeNull()
     })
-});
+})

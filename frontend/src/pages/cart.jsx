@@ -9,6 +9,7 @@ import Coupon from '../components/coupon'
 export default function Cart({}){
     const navigate=useNavigate();
     const queryClient=useQueryClient();
+    const isAdmin=localStorage.getItem('role')==='ADMIN';
     const [errorMessage, setErrorMessage]=useState('');
     const [loading, setLoading]=useState(false);
     const [appliedCoupon, setAppliedCoupon]=useState(null);
@@ -69,7 +70,7 @@ export default function Cart({}){
                 <h2 style={cartStyles.title}>🛒 Active Session Cart</h2>
                 {errorMessage && <p style={{color:'red', marginBottom:'12px'}}>{errorMessage}</p>}
                 <button
-                onClick={()=> navigate('/home')}
+                onClick={()=> navigate(isAdmin ? '/adminTab' : '/home')}
                 style={cartStyles.continueBtn}>
                     + Add More Items
                 </button>

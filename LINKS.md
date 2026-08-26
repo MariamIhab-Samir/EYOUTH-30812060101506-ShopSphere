@@ -8,3 +8,5 @@ Vercel (notification_service):
 https://vercel.com/mariam-ihab/project5_final_notification_microservice
 Vercel (review_service):
 https://vercel.com/mariam-ihab/project5_final_review_microservice
+Uptime (but it won't show to u since it needs login by my account):
+https://dashboard.uptimerobot.com/monitors
