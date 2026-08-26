@@ -29,7 +29,7 @@ const getUserOrders = async (req, res) => {
         activityLogModal.create({
             action: 'ORDERS_RETRIEVED',
             status: 'FAILURE',
-            details: {httpStatus:500, userId, count:error.message}})
+            details: {httpStatus:500, userId, errror:error.message}})
         return res.status(500).json({ error: 'Failed to retrieve order history.' });
     }
 };

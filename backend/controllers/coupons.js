@@ -23,7 +23,7 @@ const getCouponInventory=async(req, res)=>{
         });
 
         const enrichedCoupons=await Promise.all(coupons.map(async(coupon)=>{
-            const redeeemedByUser=await prisma.couponRedemption.count({
+            const redeemedByUser=await prisma.couponRedemption.count({
                 where:{userId, couponId: coupon.id}
             })
             return{
