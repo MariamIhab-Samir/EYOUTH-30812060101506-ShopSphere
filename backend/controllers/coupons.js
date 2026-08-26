@@ -16,11 +16,23 @@ const getCoupons=async(req, res)=>{
 
 const getCouponInventory=async(req, res)=>{
     try{
+        const userId=req.user.userId;
         const coupons= await prisma.coupon.findMany({
             orderBy: {discountPercent: 'asc'},
-            select: {code: true, discountPercent:true, stock: true}
+            select: {id:true, code: true, discountPercent:true, stock: true}
         });
-        return res.status(200).json({coupons})
+
+        const enrichedCoupons=await Promise.all(coupons.map(async(coupon)=>{
+            const redeeemedByUser=await prisma.couponRedemption.count({
+                where:{userId, cuponId: coupon.id}
+            })
+            return{
+                code: coupon.code,
+                discountPercent: coupon.discountPercent,
+                stock: coupon.stock - redeemedByUser
+            }
+        }));
+        return res.status(200).json({coupons: enrichedCoupons})
     }catch(err){
         console.error('Get coupon inventory error:', err);
         return res.status(500).json({error: 'Failed to load coupon inventory'});
