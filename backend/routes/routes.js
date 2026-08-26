@@ -48,7 +48,7 @@ router.post('/send-confirmation', sendConfirmationEmail);
 router.post('/webhooks/order-created', handleOrderCreatedWebhook);
 router.post('/coupons/validate', validateCoupon);
 router.get('/coupons/codes', getCoupons);
-router.get('/coupons/inventory', getCouponInventory)
+router.get('/coupons/inventory', verifyToken, getCouponInventory)
 
 router.post('/admin/products', verifyToken, isAdmin, upload.single('productImage'), adminAddProduct);
 router.post('/webhooks/product-created', handleProductCreatedWebhook);
