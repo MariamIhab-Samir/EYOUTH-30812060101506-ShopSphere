@@ -1,5 +1,6 @@
 const {PrismaClient}=require('@prisma/client');
 const activityLogModal=require('../config/activityLog');
+const {log}= require('../util/logger');
 
 const prisma = new PrismaClient();
 
@@ -18,10 +19,10 @@ const getProducts = async (req, res)=>{
                     {rating: s.rating, count: s.reviewCount};
                 })
             }else{
-                console.error('Review service responded with', response.status);
+                log('error', 'Review service responded with', {status: response.status});
             }
         }catch(reviewErr){
-            console.error('Review Service unavailable:', reviewErr.message);
+            log('warn', 'review Service unavailable', {errorMessage: reviewErr.message});
         }
 
         const enrichedProducts=products.map(p=>{
@@ -38,7 +39,7 @@ const getProducts = async (req, res)=>{
             details:{httpStatus:200}})
         return res.status(200).json(enrichedProducts);
     }catch(error){
-        console.error('Fetch products failure:', error);
+        log('error', 'get products failed', {errorMessage: error?.message?? String(error)});
         activityLogModal.create({
             action: 'PRODUCTS_ENRICHED',
             status: 'FAILURE',

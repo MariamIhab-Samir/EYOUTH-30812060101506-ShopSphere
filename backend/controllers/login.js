@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const activityLogModal = require('../config/activityLog');
+const {log}= require('../util/logger');
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
@@ -31,7 +32,7 @@ const login = async (req, res) => {
                 action:'LOGIN_FAILED_UNKNOWN_EMAIL',
                 status:'FAILURE',
                 details:{httpStatus:401,email}
-            }).catch(err=>console.error('Log bypass', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
@@ -41,7 +42,7 @@ const login = async (req, res) => {
                 action:'LOGIN_FAILED_WRONG_PASSWORD',
                 status:'FAILURE',
                 details:{httpStatus:401, userId: user.id, email:user.email}
-            }).catch(err=>console.error('Log bypass', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
@@ -50,7 +51,7 @@ const login = async (req, res) => {
                 action: 'LOGIN_REDIRECT_ADMIN',
                 status: 'FAILURE',
                 details: { httpStatus:403, userId: user.id, email: user.email, attemptedAccess: 'user tab', reason: 'Admin must use Admin tab' }
-            }).catch(err => console.error('Error logging activity:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
             return res.status(403).json({ 
                 error: 'You have an admin account. Please use the Admin tab to log in',
@@ -64,7 +65,7 @@ const login = async (req, res) => {
                 action: 'LOGIN_FORBIDDEN_ADMIN',
                 status: 'FAILURE',
                 details: { httpStatus:403, userId: user.id, email: user.email, attemptedAccess: 'admin tab', reason: 'User is not an admin' }
-            }).catch(err => console.error('Error logging activity:', err));
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
             return res.status(403).json({ 
                 error: 'Access denied. Admin privileges required.',
@@ -83,7 +84,7 @@ const login = async (req, res) => {
             action: 'LOGIN',
             status: 'SUCCESS',
             details: { httpStatus:200, userId:user.id, email:user.email }
-        }).catch(err => console.error('Log bypass:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
         return res.status(200).json({
             success: true,
@@ -99,12 +100,12 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
+        log('error', 'login failed',{errorMessage: error?.message?? String(error)});
         await activityLogModal.create({
             action: 'LOGIN',
             status: 'FAILURE',
             details: { error: error.message, errorStack: error.stack },
-        }).catch(err => console.error('Error logging activity:', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({ error: 'An error occurred during login.' });
     }
 };

@@ -1,4 +1,5 @@
 const {PrismaClient}=require('@prisma/client');
+const {log}= require('../util/logger');
 const prisma=new PrismaClient();
 
 const getCoupons=async(req, res)=>{
@@ -9,7 +10,7 @@ const getCoupons=async(req, res)=>{
         });
         return res.status(200).json({coupons})
     }catch(err){
-        console.error('Get coupons error:', err);
+        log('error', 'get coupons failed', {errorMessage: err?.message?? String(err)});
         return res.status(500).json({error:'Failed to load coupons'});
     }
 };
@@ -34,7 +35,7 @@ const getCouponInventory=async(req, res)=>{
         }));
         return res.status(200).json({coupons: enrichedCoupons})
     }catch(err){
-        console.error('Get coupon inventory error:', err);
+        log('error', 'get coupon inventory failed', {userId: req.user.userId, errorMessage: err?.message?? String(err)});
         return res.status(500).json({error: 'Failed to load coupon inventory'});
     }
 };

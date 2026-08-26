@@ -1,6 +1,7 @@
 const {PrismaClient}=require('@prisma/client');
 const prisma=new PrismaClient();
 const activityLogModal=require('../config/activityLog')
+const {log}= require('../util/logger');
 
 const validateCoupon=async(req, res)=>{
     if(req.method !== 'POST'){
@@ -34,19 +35,19 @@ const validateCoupon=async(req, res)=>{
             action: 'COUPON_VALIDATED',
             status: 'SUCCESS',
             details:{httpStatus:200, code, discount: coupon.discountPercent}
-        }).catch(err=> console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json({
             valid:true,
             discount:coupon.discountPercent,
             code:coupon.code
         });
     }catch(err){
-        console.error('Coupon validation error:', err);
+        log('error', 'coupon validation failed',{code, errorMessage: err?.message?? String(err)});
         activityLogModal.create({
             action: 'COUPON_VALIDATED',
             status: 'FAILURE',
             details: {httpStatus:500, code, error: err.message}
-        }).catch(err=> console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({error:'Failed to validate coupon'})
     }
 

@@ -1,6 +1,7 @@
 const {PrismaClient}=require('@prisma/client');
 const bcrypt= require('bcrypt');
 const activityLogModal=require('../config/activityLog')
+const {log}= require('../util/logger');
 
 const prisma= new PrismaClient();
 
@@ -29,15 +30,15 @@ const getProfile=async(req,res)=>{
             action: 'PROFILE_RETRIEVED',
             status: 'SUCCESS',
             details:{httpStatus:200, userId: req.user?.userId??null}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json(user);
     }catch(error){
-        console.error('Profile fetch error:', error);
+        log('error', 'profile fetch failed', {userId: req.user?.userId?? null, errorMessage: error?.message?? String(error)});
         activityLogModal.create({
             action: 'PROFILE_RETRIEVED',
             status: 'FAILURE',
             details:{httpStatus:500, userId:req.user?.userId??null}
-        }).catch(err=>console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
         return res.status(500).json({error:'An error occurred while fetching profile data'});
     }
 };
@@ -83,7 +84,7 @@ const updateProfile= async(req, res)=>{
                     action: 'PROFILE_UPDATED',
                     status: 'FAILURE',
                     details:{httpStatus:401, userId:req.user?.userId??null}
-                }).catch(err=>console.error('Log bypass', err));
+                }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
                 return res.status(401).json({error:'Current password is incorrect'});
             }
 
@@ -107,15 +108,15 @@ const updateProfile= async(req, res)=>{
             action: 'PROFILE_UPDATED',
             status: 'SUCCESS',
             details:{httpStatus:200, userId: req.user?.userId??null, fieldsChanged: Object.keys(updateData)}
-        }).catch(err=>console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
         return res.status(200).json({success:true, message:'Profile updated successfully', user: updatedUser})
     }catch(error){
-        console.error('Profile update error:', error);
+        log('error', 'profile update failed', {userId: req.user?.userId?? null, errorMessage: error?.message?? String(error)});
         activityLogModal.create({
             action: 'PROFILE_UPDATED',
             status: 'FAILURE',
             details:{httpStatus:500, userId: req.user?.userId??null, error:error.message}
-        }).catch(err=>console.error('Log bypass', err));
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}));
         return res.status(500).json({error:'An error occurred while updating profile data'});
     }
 };

@@ -9,6 +9,7 @@ const profileRouter=require('./routes/routes');
 const orderRouter=require('./routes/routes')
 const path=require('path');
 const activityLogModal=require('./config/activityLog');
+const {log}=require('./util/logger');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -57,13 +58,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     }
 }));
 app.use((err, req, res, next)=>{
-    console.error('Unhandled error:', err);
+    log('error', 'unhandled app error', {errorMessage: err?.message?? String(err), path: req.originalUrl})
     res.status(500).json({error:'Internal server error'})
     activityLogModal.create({
                 action: 'UNHANDLED_APP_ERROR',
                 status: 'FAILURE',
                 details:{httpStatus:500}
-            }).catch(err=> console.error('Log bypass:', err))
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 })
 
 let isConnected = false;
@@ -71,34 +72,34 @@ let isConnected = false;
 const connectDB=async()=>{
     if(isConnected && mongoose.connection.readyState === 1)return;
     const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-    console.log('DEBUG mongoUri length at connect time:', mongoUri.length, 'NODE_ENV', process.env.NODE_ENV);
     await mongoose.connect(mongoUri);
     isConnected=true;
-    console.log('[STATUS 200] MongoDB connected successfully.')
+    log('info','[STATUS 200] MongoDB connected successfully.')
 }
 
 const startServer = async () => {
     await connectDB();
     try {
-        console.log('Initializing system data engines...');
+        log('info', 'Initializing system data engines...');
         
         const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-        console.log('[STATUS 200] MongoDB connected successfully. (Activity Logging Engine online).');
+        log('info', '[STATUS 200] MongoDB connected successfully. (Activity Logging Engine online).');
 
         if (process.env.NODE_ENV !== 'test'){
             app.listen(PORT, () => {
-                console.log(`[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
-                console.log(`Health Check active at http://localhost:${PORT}/health`);
+                log(info, `[STATUS 200] Backend service deployed successfully on port: ${PORT}`);
+                log(info, `Health Check active at http://localhost:${PORT}/health`);
             });
         }
 
     } catch (error) {
         
-        console.error(`[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
+        logerror('error', `[STATUS 500] Critical failure during backend boot sequence: ${error.message}`);
             activityLogModal.create({
                 action: 'UNHANDLED_APP_ERROR',
                 status: 'FAILURE',
-                details:{httpStatus:500}})
+                details:{httpStatus:500}
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         
         if (process.env.NODE_ENV !== 'test'){
             process.exit(1); 

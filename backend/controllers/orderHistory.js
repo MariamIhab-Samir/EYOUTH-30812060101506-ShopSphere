@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const activityLogModal = require('../config/activityLog');
+const {log}= require('../util/logger');
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ const getUserOrders = async (req, res) => {
             details: {httpStatus:200, userId, count:orders.length}})
         return res.status(200).json({ success: true, orders });
     } catch (error) {
-        console.error('Get user orders error:', error);
+        log('error', 'get user orders failed', {userId, errorMessage: error?.message?? String(error)});
         activityLogModal.create({
             action: 'ORDERS_RETRIEVED',
             status: 'FAILURE',

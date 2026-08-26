@@ -1,5 +1,6 @@
 const{PrismaClient}=require('@prisma/client');
 const activityLogModal=require('../config/activityLog');
+const {log}= require('../util/logger');
 const prisma=new PrismaClient();
 
 const handleProductCreatedWebhook=async(req, res)=>{
@@ -55,12 +56,12 @@ const handleProductCreatedWebhook=async(req, res)=>{
 
         if(!response.ok){
             const body=await response.text();
-            console.error(`Notification service responded with ${response.status}`, body);
+            log('warn','Notification service non-2xx', {status: response.status, product: product.id, responseBody: body});
             activityLogModal.create({
                 action:'PRODUCT_CREATED_WEBHOOK',
                 status: 'FAILURE',
                 details: {httpStatus:502, productId: product.id}
-            }).catch(err=>console.error('Log bypass', err))
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
             return res.status(502).json({error: 'Notification service unavailable'})
         }
 
@@ -69,15 +70,15 @@ const handleProductCreatedWebhook=async(req, res)=>{
             action:'PRODUCT_CREATED_WEBHOOK',
             status: 'SUCCESS',
             details: {httpStatus:200, productId: product.id, matched: matchedUsers.length}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(200).json(data);
     }catch(err){
-        console.error('Product-created webhook error:', err);
+        log('error','product-created webhook failed:', {productId: req.body?.productId, errorMessage: err?.message?? String(err)});
         activityLogModal.create({
             action:'PRODUCT_CREATED_WEBHOOK',
             status: 'FAILURE',
             details: {httpStatus:500, productId: req.body?.productId, error:err.message}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(500).json({error:'Failed to process product-created webhook'})
         
     }

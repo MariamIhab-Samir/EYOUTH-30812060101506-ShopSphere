@@ -1,4 +1,6 @@
 const activityLogModal=require('../config/activityLog')
+const {log}= require('../util/logger')
+
 const getComments=async(req,res)=>{
     try{
         const{productId}=req.params;
@@ -8,15 +10,15 @@ const getComments=async(req,res)=>{
             action:'COMMENTS_RETRIEVED',
             status: 'SUCCESS',
             details: {httpStatus:200, productId}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(response.status).json(data);
     }catch(err){
-        console.error('Get comments proxy error:', err);
+        log('error', 'get comments proxy failed', {productId: req.params.productId, errorMessage: err?.message?? String(err)});
         activityLogModal.create({
             action:'COMMENTS_RETRIEVED',
             status: 'FAILURE',
             details: {httpStatus:503, productId: req.params.productId}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(503).json({error:'Review service is currently unavailable'})
     }
 };
@@ -46,15 +48,15 @@ const addComment=async(req, res)=>{
             action:'COMMENT_POSTED',
             status: 'SUCCESS',
             details: {httpStatus:201, productId, userId: req.user.userId}
-        }).catch(err=>console.error('Log bypass', err))
+        }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(response.status).json(data);
     }catch(err){
-        console.error('Add comment proxy error:', err);
+        log('error', 'add comment proxy failed', {productId: req.params.productId, errorMessage: err?.message?? String(err)});
             activityLogModal.create({
                 action:'COMMENT_POSTED',
                 status: 'FAILURE',
                 details: {httpStatus:503, productId: req.params.productId, userId: req.user.userId, error:err.message}
-            }).catch(err=>console.error('Log bypass', err))
+            }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
         return res.status(503).json({error:'Review service is currently unavailable'})
     }
 };
