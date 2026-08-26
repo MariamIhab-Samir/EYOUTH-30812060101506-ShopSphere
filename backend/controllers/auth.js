@@ -149,7 +149,7 @@ const adminDeleteProduct = async (req, res) => {
     }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
 
     return res.status(200).json({ success: true, message: 'Product deleted successfully.' });
-  } catch (err) {
+  } catch (error) {
     log ('error','Admin delete product failed', {errorMessage: err?.message?? String(err), adminId: req.user?.userId?? null})
     activityLogModal.create({
       action: 'ADMIN_PRODUCT_DELETED',
