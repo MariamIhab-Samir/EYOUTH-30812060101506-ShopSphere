@@ -34,6 +34,7 @@ export default function ProductComments(){
     const productName= location.state?.productName || `Product #$(productId)`
     const [newComment, setNewComment]= useState('');
     const [newRating, setNewRating]= useState(0);
+    const [formError, setFormError]= useState('');
 
     const handleSubmit=(e)=>{
         e.preventDefault();
