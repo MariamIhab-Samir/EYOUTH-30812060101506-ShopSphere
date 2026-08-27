@@ -21,6 +21,10 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Missing required registration parameters.' });
     }
 
+    if(password.length<6){
+      return res.status(400).jon({error: 'Password must be at least 6 characters long'})
+    }
+
     if (!isValidEmailFormat(email)) {
       return res.status(400).json({ error: 'Please provide a valid email address structure.' });
     }
@@ -99,7 +103,7 @@ const register = async (req, res) => {
         status:'SUCCESS',
         details:{httpStatus:201, email}
       }).catch(err=>log ('error','Log bypass', {errorMessage: err?.message?? String(err)}))
-    return res.status(201).json({success: true, message:'Account created successfully.', user: newUser});
+    return res.status(201).json({success: true, message:'Account created successfully.', user: newUser, token});
     
   } catch (error) {
     log('error', 'registration failed', {errorMessage: error?.message?? String(error)});

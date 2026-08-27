@@ -37,13 +37,17 @@ export default function ProductComments(){
 
     const handleSubmit=(e)=>{
         e.preventDefault();
-        if (!newComment.trim()) return;
+        setFormError('');
+        if (!newComment.trim() || newRating === 0) {
+            setFormError('Both a star rating and a comment are required')
+            return;
+        }
 
         addComment.mutate(
             {text:newComment, rating:newRating},
             {onSuccess:()=>{
                 setNewComment('');
-                setNewRating(5);
+                setNewRating(0);
                 }
             }
         )
@@ -58,6 +62,7 @@ return (
         {addComment.isError && (
             <Alert type='error' message={addComment.error?.response?.data?.error || 'Failed to post comment'}></Alert>
         )}
+        {formError && <Alert type='error' message={formError}></Alert>}
         <div style={commStyles.list}>
             {isLoading?(
                 <p style={commStyles.emptyText}>Loadung reviews...</p>
