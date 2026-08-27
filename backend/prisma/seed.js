@@ -66,13 +66,13 @@ async function main(){
             {name: 'Green Iphone 17', description:'High Quality', price: 800, discount:0, stock:15, category:'Iphones', image:'/assets/products/greenIphone17.jpg'},
             {name: 'Lavender Iphone 17', description:'High Quality', price: 800, discount:0, stock:15, category:'Iphones', image:'/assets/products/lavenderIphone17.jpg'},
             {name: 'White Iphone 17', description:'High Quality', price: 800, discount:0, stock:15, category:'Iphones', image:'/assets/products/whiteIphone17.jpg'},
-            {name: 'Black Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Iphones', image:'/assets/products/blackSamsungS26.jpg'},
-            {name: 'Blue Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Iphones', image:'/assets/products/blueSamsungS26.jpg'},
-            {name: 'White Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Iphones', image:'/assets/products/whiteSamsungS26.jpg'},
-            {name: 'Violet Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Iphones', image:'/assets/products/violetSamsungS26.jpg'},
-            {name: 'Dell 14 Plus', description:'High Quality', price: 900, discount:0, stock:15, category:'Iphones', image:'/assets/products/dell14plus.jpg'},
-            {name: 'Hp Omnibook X', description:'High Quality', price: 1000, discount:0, stock:15, category:'Iphones', image:'/assets/products/hpOmnibookX.jpg'},
-            {name: 'Lenovo ThinkPad X1', description:'High Quality', price: 1100, discount:0, stock:15, category:'Iphones', image:'/assets/products/lenovoThinkpadX1.jpg'},
+            {name: 'Black Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/blackSamsungS26.jpg'},
+            {name: 'Blue Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/blueSamsungS26.jpg'},
+            {name: 'White Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/whiteSamsungS26.jpg'},
+            {name: 'Violet Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/violetSamsungS26.jpg'},
+            {name: 'Dell 14 Plus', description:'High Quality', price: 900, discount:0, stock:15, category:'Laptop', image:'/assets/products/dell14plus.jpg'},
+            {name: 'Hp Omnibook X', description:'High Quality', price: 1000, discount:0, stock:15, category:'Laptop', image:'/assets/products/hpOmnibookX.jpg'},
+            {name: 'Lenovo ThinkPad X1', description:'High Quality', price: 1100, discount:0, stock:15, category:'Laptop', image:'/assets/products/lenovoThinkpadX1.jpg'},
             /*The other pics are for the admins to add*/
         ]
     });
