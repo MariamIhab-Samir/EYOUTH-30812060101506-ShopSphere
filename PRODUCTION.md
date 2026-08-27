@@ -50,11 +50,8 @@ Applied to all three Express services (backend, notification-service, review-ser
 ## 6. Rollback Testing
 See `ROLLBACK.md` for the full procedure and live test results.
 
-## 7. Known Open Items
-- Mailer SMTP configuration — needs final confirmation of env vars in Vercel Production settings for backend and notification-service.
-- Structured logging (e.g. `pino`) — not implemented; current logging is `console.log`/`console.error`.
-- CI/CD pipeline (Task 5) — not implemented; no workflow file, no branch protection.
-- K8s namespace simulation (Task 2, local minikube/kind) — not started.
-- Coupon accuracy fixes — flagged as needing rework after other bug fixes.
-- `adminAddProduct` duplicate-name handling — still returns generic 500 instead of a specific error.
-- Review-service survival across a main-app redeploy — not explicitly tested.
+## 7. Structured Logging
+Using the logger helper
+
+## 8. Production Cron
+From node cron to vercel cron

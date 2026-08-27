@@ -55,6 +55,7 @@ const styles ={
         borderBottom: '2px solid #4c1d95',
         position: 'sticky',
         top: 0,
+        zIndex: 1000
     },
     logo: {
         fontSize: '22px',
