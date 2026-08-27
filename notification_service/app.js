@@ -9,8 +9,9 @@ app.set('trust proxy', 1);
 const PORT=process.env.PORT || 5002;
 
 const allowedOrigins=[
-    'https://project5-final-frontend.vercel.app',
-    'http://localhost:3000'
+    'https://frontend-eyouth-30812060101506-shopsphere.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3010'
 ]
 app.use(cors({
     origin: function (origin, callback){

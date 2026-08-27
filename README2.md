@@ -1,3 +1,5 @@
+## Before reading or doing anything, the app is a bit laggy so wait and free up your device so it runs faster and some emails might land in spam cuz this is not a bought domain, I am just a single sender on sendGrid, so, check there as well, also, there are seede products and users in addition to those of last time but u will find some images for products that are not yet used, add them and they will land as in production supabase bucket and signup for the users u will add ##
+
 ## What was added
 
 **Coupons system** — `Coupon` and `CouponRedemption` models (new, added to schema and seed).
@@ -31,17 +33,7 @@
 - Splitting these apart means distributed transactions for what's fundamentally one atomic operation
 - Keeping them together keeps consistency simple
 
-**Reviews and Notifications extracted as microservices.**
-- No dependency on the checkout path
-- Different load profile — read-heavy/event-triggered, independent of purchase volume
-- Notifications specifically: owns its own persistent state (the Notification table) driven by events from the main app, rather than being a stateless pass-through action
-- Only seams where splitting cost < staying-together cost
-
-**Why stock-low and order-created stayed in the monolith, not extracted:**
-- Both are stateless, single-action webhooks — receive an event, send one email, done
-- No persistent state of their own to justify a separate database
-- Extracting them adds a network hop and a second deployable to redeploy/monitor, with no load-pattern or release-cadence benefit over keeping them in the monolith
-- They already fully satisfy the serverless/event-driven requirement (Task 4) regardless of which codebase they live in — extraction is an architecture decision (Task 3), not a Task 4 requirement
+- **Review, notification, stock-low, order-created** Read ADR.md
 
 **Event-driven work goes serverless.** Confirmation emails, stock checks, coupon validation, low-stock alerts.
 - Triggered by an event, does one small job, exits
@@ -131,4 +123,6 @@
 | Ingress | External traffic entry point, routing rules | Routes public requests to the right Service (e.g. `/api` → backend Service) |
 | Self-healing | Restarts/replaces failed Pods automatically | If a backend Pod crashes, Kubernetes replaces it without manual intervention |
 | Auto-scaling | Adjusts replica count based on load | More backend Pods spun up automatically during high traffic |
-# testing CI ###
+
+## CI/CD 
+Through test-ci, to ensure everything is passed on a branch before getting to master so that it is successful before it is deployed there

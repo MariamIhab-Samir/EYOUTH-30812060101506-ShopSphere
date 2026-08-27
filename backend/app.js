@@ -16,7 +16,7 @@ app.set('trust proxy', 1);
 const PORT = 5000;
 
 const allowedOrigins=[
-    'https://project5-final-frontend.vercel.app',
+    'https://frontend-eyouth-30812060101506-shopsphere.vercel.app',
     'http://localhost:3000',
     'http://localhost:3010'
 ]
