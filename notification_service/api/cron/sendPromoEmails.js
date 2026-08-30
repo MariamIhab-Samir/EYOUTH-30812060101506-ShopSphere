@@ -1,4 +1,5 @@
 const sendPromoNotificationEmails=require('../../jobs/promoNotification');
+const {log}=require('../../util/logger');
 
 module.exports=async(req, res)=>{
     if(req.headers['authorization']!==`Bearer ${process.env.CRON_SECRET}`){
@@ -7,11 +8,11 @@ module.exports=async(req, res)=>{
     try{
         const emailedCount=await sendPromoNotificationEmails();
         if(emailedCount>0){
-            console.log(`[Promo Emails] Sent digest to ${emailedCount} user(s)`);
+            log('info', '[Promo Emails] digest sent', {emailedCount});
         }
         return res.status(200).json({emailedCount});
     }catch(err){
-        console.error('[Promo emails] Failed to send notification emails', err);
+        log('error', '[Promo Emails] Failed to notification emails', {errorMessage: err?.message ?? String(err)});
         return res.status(500).json({error: 'Promo email job failed'})
     }
 }

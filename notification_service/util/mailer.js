@@ -1,5 +1,6 @@
 const nodemailer=require('nodemailer');
 require('dotenv').config();
+const {log}=require('./logger');
 
 const transporter=nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -12,8 +13,8 @@ const transporter=nodemailer.createTransport({
 });
 
 transporter.verify((err)=>{
-    if (err) console.error('Mailer config error:', err.message);
-    else console.log('Mailer ready')
+    if (err) log('error', 'Mailer config error', {errorMessage: err?.message ?? String(err)});
+    else log('info', 'Mailer ready')
 });
 
 async function sendEmail({to, subject, html, text}){
@@ -27,7 +28,7 @@ async function sendEmail({to, subject, html, text}){
         });
         return info;
     }catch(err){
-        console.error('Email send failed:', err.message);
+        log('error', 'Email send failed', {errorMessage: err?.message ?? String(err)});
         throw err;
     }
 }

@@ -84,7 +84,6 @@ const register = async (req, res) => {
       await sendWelcomeEmail(newUser);
     }catch(mailErr){
       log('warn', 'Welcome email failed', {userId, errorMessage: mailErr?.message?? String(mailErr)});
-      console.error('Welcome email failed to send:', mailErr)
     }
     
     try{

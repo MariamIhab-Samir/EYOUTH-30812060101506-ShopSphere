@@ -1,4 +1,5 @@
 const Comment=require('../config/commentModal');
+const {log}=require('../util/logger');
 
 const getComments= async(req, res)=>{
     try{
@@ -15,7 +16,7 @@ const getComments= async(req, res)=>{
 
         return res.status(200).json(formatted);
     }catch(error){
-        console.error('Fetch comments error:', error);
+        log('error', 'Fetch comments error', {errorMessage: err?.message ?? String(err)});
         return res.status(500).json({error:'An error occurred while fetching comments'})
     }
 };
@@ -59,7 +60,7 @@ const addComment= async(req, res)=>{
             user:comment.userName
         });
     }catch(error){
-        console.error('Add comment error:', error);
+        log ('error', 'Add comment error', {errorMessage: err?.message ?? String(err)});
         return res.status(500).json({error:'An error occured while posting your comment'});
     }
 }
@@ -84,7 +85,7 @@ const getReviewStats=async(req, res)=>{
 
         return res.status(200).json(formatted);
     }catch(error){
-        console.error('Fetch review stats error:', error);
+        log ('error', 'Fetch review stats error', {errorMessage: err?.message ?? String(err)});
         return res.status(500).json({error: 'An error occurred while fetching review stats'})
     }
 }
