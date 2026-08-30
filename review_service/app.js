@@ -41,13 +41,29 @@ app.get('/health', (req, res) => {
 
 let isConnected = false;
 
+const delay=(ms)=> new Promise(resolve=> setTimeout(resolve, ms))
 const connectDB=async()=>{
-    if(isConnected)return;
+    if(isConnected && mongoose.connection.readyState===1)return;
     const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-    log('info', 'DEBUG mongoUri length at connect time:', {length:mongoUri.length, nodeEnv:process.env.NODE_ENV});
-    await mongoose.connect(mongoUri);
-    isConnected=true;
-    log('info', '[STATUS 200] MongoDB connected successfully.')
+    const maxAttempts=3;
+    let lastError;
+
+    for (let attempt=1; attempt <=maxAttempts; attempt++){
+        try{
+            await mongoose.connect(mongoUri);
+            isConnected=true;
+            log('info', '[STATUS 200] MongoDB connected successfully', {attempt});
+            return;
+        }catch(err){
+            lastError=err;
+            log('error', `MongoDB connection attempt ${attempt} of ${maxAttempts} failed`, {errorMessage: err.message});
+            if(attempt<maxAttempts){
+                await delay(attempt * 500)
+            }
+        }
+    }
+    isConnected= false;
+    throw lastError;
 }
 
 app.use(async (req, res, next)=> {
@@ -62,25 +78,18 @@ app.use(async (req, res, next)=> {
 app.use('/api', reviewRouter);
 
 const startServer = async () => {
-    await connectDB();
     try {
-
-        const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
+        await connectDB();
         log('info', '[STATUS 200] MongoDB connected successfully. (Review Service Engine online).');
-
-        if (process.env.NODE_ENV !== 'test'){
-            app.listen(PORT, () => {
-                log('info', '[STATUS 200] Review Service running independently on port', {port: PORT});
-                log('info', 'Health Check active', {url:`http://localhost:${PORT}/health`});;
-            });
-        }
 
     } catch (error) {
         log ('error', '[STATUS 500] Critical starting failure', {errorMessage: error.message});
-        
-        if (process.env.NODE_ENV !== 'test'){
-            process.exit(1); 
-        }
+    }
+    if (process.env.NODE_ENV !== 'test'){
+        app.listen(PORT, () => {
+            log('info', '[STATUS 200] Review Service running independently on port', {port: PORT});
+            log('info', 'Health Check active', {url:`http://localhost:${PORT}/health`});;
+        });
     }
 };
 
