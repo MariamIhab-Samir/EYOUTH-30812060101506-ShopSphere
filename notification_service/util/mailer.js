@@ -20,7 +20,7 @@ transporter.verify((err)=>{
 async function sendEmail({to, subject, html, text}){
     try{
         const info=await transporter.sendMail({
-            from: `"Lionera", <${process.env.EMAIL_FROM}>`,
+            from: `"Lionera" <${process.env.EMAIL_FROM}>`,
             to,
             subject,
             text,
