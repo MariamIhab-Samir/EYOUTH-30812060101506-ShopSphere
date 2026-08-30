@@ -1,7 +1,7 @@
 require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
-const {log}=require('../util/logger');
+const {log}=require('./util/logger');
 const notificationRouter=require('./routes/routes');
 const rateLimit=require('express-rate-limit');
 const helmet=require('helmet');

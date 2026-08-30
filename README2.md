@@ -1,4 +1,14 @@
-## Before reading or doing anything, the app is a bit laggy so wait and free up your device so it runs faster and some emails might land in spam cuz this is not a bought domain, I am just a single sender on sendGrid, so, check there as well, also, there are seede products and users in addition to those of last time but u will find some images for products that are not yet used, add them and they will land as in production supabase bucket and signup for the users u will add ##
+## Before you start
+- Create your own secret files guided from the examples.
+- The app may run a little slow — free up your device for smoother testing.
+- Some emails may land in spam — this project uses a free SendGrid Single Sender
+  (not a purchased/verified domain), so spam filtering is more aggressive than usual
+  Check your spam folder
+- Seeded products/users are available, plus a few unused product images —
+  add them as new products (they'll upload to production Supabase Storage) and
+  sign up fresh test users to try the notification flow end-to-end
+- If testing the local k8s simulation (aws-simulation / gcp-simulation
+  namespaces), create your own SendGrid account and credentials. Don't forget to add them to k8s/notification_service/notification-secret.yaml
 
 ## What was added
 
