@@ -70,10 +70,10 @@ async function main(){
             {name: 'Blue Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/blueSamsungS26.jpg'},
             {name: 'White Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/whiteSamsungS26.jpg'},
             {name: 'Violet Samsung S26', description:'High Quality', price: 900, discount:0, stock:15, category:'Samsung', image:'/assets/products/violetSamsungS26.webp'},
-            {name: 'Dell 14 Plus', description:'High Quality', price: 900, discount:0, stock:15, category:'Laptop', image:'/assets/products/dell14plus.jpg'},
-            {name: 'Hp Omnibook X', description:'High Quality', price: 1000, discount:0, stock:15, category:'Laptop', image:'/assets/products/hpOmnibookX.jpg'},
-            {name: 'Lenovo ThinkPad X1', description:'High Quality', price: 1100, discount:0, stock:15, category:'Laptop', image:'/assets/products/lenovoThinkpadX1.png'},
-            /*The other pics are for the admins to add*/
+            {name: 'Dell 14 Plus', description:'High Quality', price: 900, discount:0, stock:15, category:'Laptops', image:'/assets/products/dell14plus.jpg'},
+            {name: 'Hp Omnibook X', description:'High Quality', price: 1000, discount:0, stock:15, category:'Laptops', image:'/assets/products/hpOmnibookX.jpg'},
+            {name: 'Lenovo ThinkPad X1', description:'High Quality', price: 1100, discount:0, stock:15, category:'Laptops', image:'/assets/products/lenovoThinkpadX1.png'},
+            /*The other pics are for the admins to add other corresponding product cards*/
         ]
     });
 

@@ -1,12 +1,13 @@
 ## Before you start
+- Create your own user and admin to actually get access to the sent emails aside from trying out the seeded ones
 - Create your own secret files guided from the examples.
-- Before trying it out — whether in production or locally on k8s — run npx prisma db push for both backend and notification_service, and seed the backend's database as well. When pushing/seeding against production, make sure to set the DATABASE_URL env variable to point at production first (e.g. set DATABASE_URL=<production_url> on Windows, or export DATABASE_URL=<production_url> on macOS/Linux) before running the push/seed commands — otherwise they'll run against your local database instead.
-- The app may run a little slow — free up your device for smoother testing.
+- Before trying it out — whether in production or locally on k8s — run npx prisma db push for both backend and notification_service, and seed the backend's database as well. When pushing/seeding against production, make sure to set the DATABASE_URL env variable to point at production first (e.g. set DATABASE_URL=<production_url> on Windows, or export DATABASE_URL=<production_url> on macOS/Linux) before running the push/seed commands — otherwise they'll run against your local database instead
+- The app may run a little slow — free up your device for smoother testing
 - Some emails may land in spam — this project uses a free SendGrid Single Sender
   (not a purchased/verified domain), so spam filtering is more aggressive than usual
   Check your spam folder
-- Seeded products/users are available, plus a few unused product images —
-  add them as new products (they'll upload to production Supabase Storage) and
+- Seeded products (for local launches for the app)/users are available, plus a few unused product images —
+  add the unused images for new products as new products (they'll upload to production Supabase Storage with the production url along the local seeded ones) and
   sign up fresh test users to try the notification flow end-to-end
 - If testing the local k8s simulation (aws-simulation / gcp-simulation
   namespaces), create your own SendGrid account and credentials. Don't forget to add them to k8s/notification_service/notification-secret.yaml
