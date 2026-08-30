@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {API_URL} from '../config';
 
-export default function ProductModal({product, onClose, onSuccess}) {
+export default function ProductModal({product, categories=[], onClose, onSuccess}) {
     const isEditMode= Boolean(product);
 
     const[formData, setFormData] = useState({
@@ -97,7 +97,12 @@ export default function ProductModal({product, onClose, onSuccess}) {
                     </div>
                     <div style={modalStyles.inputGroup}>
                         <label htmlFor='product-category' style={modalStyles.label}>Category *</label>
-                        <input id='product-category' type='text' name='category' value={formData.category} onChange={handleChange} style={modalStyles.input}></input>
+                        <select id='product-category' type='text' name='category' value={formData.category} onChange={handleChange} style={modalStyles.input}>
+                            <option value=''>Select a category</option>
+                            {categories.map(cat=>(
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
                     </div>
                     <div style={modalStyles.inputGroup}>
                         <label htmlFor='product-image' style={modalStyles.label}>Product Image {isEditMode? '(leave blank to keep current image)': '*'}</label>

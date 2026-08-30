@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const reviewRouter=require('./routes/routes');
+const {log}=require('./util/logger');
 const rateLimit=require('express-rate-limit');
 const helmet=require('helmet');
 const app=express();
@@ -45,10 +46,10 @@ let isConnected = false;
 const connectDB=async()=>{
     if(isConnected)return;
     const mongoUri=process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-    console.log('DEBUG mongoUri length at connect time:', mongoUri.length, 'NODE_ENV', process.env.NODE_ENV);
+    log('info', 'DEBUG mongoUri length at connect time:', {length:mongoUri.length, nodeEnv:process.env.NODE_ENV});
     await mongoose.connect(mongoUri);
     isConnected=true;
-    console.log('[STATUS 200] MongoDB connected successfully.')
+    log('info', '[STATUS 200] MongoDB connected successfully.')
 }
 
 const startServer = async () => {
@@ -56,18 +57,17 @@ const startServer = async () => {
     try {
 
         const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce_logs';
-        console.log('[STATUS 200] MongoDB connected successfully. (Review Service Engine online).');
+        log('info', '[STATUS 200] MongoDB connected successfully. (Review Service Engine online).');
 
         if (process.env.NODE_ENV !== 'test'){
             app.listen(PORT, () => {
-                console.log(`[STATUS 200] Review Service running independently on port: ${PORT}`);
-                console.log(`Health Check active at http://localhost:${PORT}/health`);;
+                log('info', '[STATUS 200] Review Service running independently on port', {port: PORT});
+                log('info', 'Health Check active', {url:`http://localhost:${PORT}/health`});;
             });
         }
 
     } catch (error) {
-        
-        console.error(`[STATUS 500] Critical starting failure : ${error.message}`);
+        log ('error', '[STATUS 500] Critical starting failure', {errorMessage: error.message});
         
         if (process.env.NODE_ENV !== 'test'){
             process.exit(1); 

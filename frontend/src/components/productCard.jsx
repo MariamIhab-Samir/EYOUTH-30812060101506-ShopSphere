@@ -182,8 +182,7 @@ const cardStyles = {
     category:{
         color: '#706d4c',
         margin: 0,
-        fontSize: '12px',
-        textTransform: 'uppercase'
+        fontSize: '12px'
     },
     ratingContainer:{
         display:'flex',

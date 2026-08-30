@@ -171,8 +171,7 @@ const detailsStyles = {
         padding:'4px 10px',
         margin: 0,
         fontSize: '12px',
-        fontWeight:'bold',
-        textTransform: 'uppercase'
+        fontWeight:'bold'
     },
     description:{
         color:'#94a3b8',

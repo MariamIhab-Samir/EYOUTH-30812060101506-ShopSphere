@@ -19,7 +19,11 @@ api.interceptors.request.use((config)=>{
 api.interceptors.response.use(
     (response)=>response,
     (error)=>{
-        if(error.response?.status===401){
+        const isAuthEndpoint = error.config?.url?.includes('/login')
+            || error.config?.url?.includes('/register')
+            || error.config?.url?.includes('/profile');
+
+        if(error.response?.status===401 && !isAuthEndpoint){
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('user');

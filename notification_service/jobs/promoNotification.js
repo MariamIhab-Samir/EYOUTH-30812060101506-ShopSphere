@@ -1,6 +1,7 @@
 const {PrismaClient}=require('@prisma/client');
 const {sendEmail}=require('../util/mailer');
 const { buildPromoEmail } = require('../emails/promoNotification');
+const {log}=require('../util/logger');
 const prisma=new PrismaClient();
 
 async function sendPromoNotificationEmails(){
@@ -34,7 +35,7 @@ async function sendPromoNotificationEmails(){
 
             emailedCount++;
         }catch(err){
-            console.error(`[Promo Emails] Failed to email user ${userId}:`, err);
+            log('error', '[Promo Emails] Failed to email user', {userId, errorMessage: err?.message ?? String(err)});
         }
     }
     return emailedCount;

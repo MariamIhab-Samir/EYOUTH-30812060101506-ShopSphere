@@ -221,6 +221,7 @@ export default function Home({setGlobalScreen}) {
             {showModal && (
                 <ProductModal
                 product={editingProduct}
+                categories={[...new Set(Products.map(p=>p.category).filter(Boolean))]}
                 onClose={()=> {setShowModal(false); setEditingProduct(null);}}
                 onSuccess={handleModalSuccess}></ProductModal>
             )}

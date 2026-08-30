@@ -10,3 +10,5 @@ Vercel (review_service):
 https://review-eyouth-30812060101506-shopsphere.vercel.app
 Uptime (but it won't show to u since it needs login by my account):
 https://dashboard.uptimerobot.com/monitors
+Uptime status page (It requires no login so u can actually see it):
+https://stats.uptimerobot.com/4YrqLfpm3H

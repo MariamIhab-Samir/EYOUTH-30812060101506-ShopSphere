@@ -1,5 +1,6 @@
 const{PrismaClient}=require('@prisma/client');
 const sendPromoNotificationEmails=require('../jobs/promoNotification')
+const {log}=require('../util/logger');
 const prisma=new PrismaClient();
 
 const handleProductCreated=async(req, res)=>{
@@ -33,11 +34,11 @@ const handleProductCreated=async(req, res)=>{
                 }
             })
         ));
-        console.log('DEBUG DATABASE_URL length:', process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 'UNDEFINED');
+        log('info', 'DEBUG DATABASE_URL length:', {length:process.env.DATABASE_URL?.length?? 'UNDEFINED'});
         const emailedCount=await sendPromoNotificationEmails();
         return res.status(200).json({success:true, matched:matchedUsers.length, message:'Promotion email sent', emailed: emailedCount});
     }catch(err){
-        console.error('Product-created webhook error:', err);
+        log('error', 'Product-created webhook error', {errorMessage: err?.message ?? String(err)});
         return res.status(500).json({error:'Failed to process product-created webhook'})
         
     }

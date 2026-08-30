@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 
 const getProducts = async (req, res)=>{
     try{
-        const products = await prisma.product.findMany();
+        const products = await prisma.product.findMany({
+            orderBy: {id: 'asc'}
+        });
 
         const statsByProduct={};
         try{

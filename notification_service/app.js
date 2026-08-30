@@ -1,6 +1,7 @@
 require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
+const {log}=require('./util/logger');
 const notificationRouter=require('./routes/routes');
 const rateLimit=require('express-rate-limit');
 const helmet=require('helmet');
@@ -43,15 +44,13 @@ const startServer = async () => {
     try {
         if (process.env.NODE_ENV !== 'test'){
             app.listen(PORT, () => {
-                console.log(`[STATUS 200] Notification Service running independently on port: ${PORT}`);
-                console.log(`Health Check active at http://localhost:${PORT}/health`);
+                log('info', '[STATUS 200] Notification Service running independently', {port: PORT});
+                log('Health Check active', {url: `http://localhost:${PORT}/health`});
             });
         }
 
     } catch (error) {
-        
-        console.error(`[STATUS 500] Critical starting failure : ${error.message}`);
-        
+        log('error', '[STATUS 500] Critical starting failure', {errorMessage: error?.message ?? String(error)});
         if (process.env.NODE_ENV !== 'test'){
             process.exit(1); 
         }
