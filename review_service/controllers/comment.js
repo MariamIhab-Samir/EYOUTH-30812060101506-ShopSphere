@@ -60,7 +60,7 @@ const addComment= async(req, res)=>{
             user:comment.userName
         });
     }catch(error){
-        log ('error', 'Add comment error', {errorMessage: err?.message ?? String(err)});
+        log ('error', 'Add comment error', {errorMessage: error?.message ?? String(error)});
         return res.status(500).json({error:'An error occured while posting your comment'});
     }
 }
