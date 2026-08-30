@@ -39,8 +39,6 @@ app.get('/health', (req, res) => {
     return res.status(200).json({ status: 'UP', timestamp: new Date() });
 });
 
-app.use('/api', reviewRouter);
-
 let isConnected = false;
 
 const connectDB=async()=>{
@@ -51,6 +49,17 @@ const connectDB=async()=>{
     isConnected=true;
     log('info', '[STATUS 200] MongoDB connected successfully.')
 }
+
+app.use(async (req, res, next)=> {
+    try{
+        await connectDB();
+        next();
+    }catch(err){
+        log('error', 'DB connection failed for request', {errorMessage: err.message});
+        return res.status(503).json({error: 'Database temporarily unavailable, please retry'});
+    }
+});
+app.use('/api', reviewRouter);
 
 const startServer = async () => {
     await connectDB();
