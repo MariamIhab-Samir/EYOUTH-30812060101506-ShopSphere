@@ -50,7 +50,7 @@ const startServer = async () => {
         }
 
     } catch (error) {
-        log('error', '[STATUS 500] Critical starting failure', {errorMessage: err?.message ?? String(err)});
+        log('error', '[STATUS 500] Critical starting failure', {errorMessage: error?.message ?? String(error)});
         if (process.env.NODE_ENV !== 'test'){
             process.exit(1); 
         }

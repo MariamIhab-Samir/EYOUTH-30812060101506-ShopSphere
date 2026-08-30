@@ -1,5 +1,6 @@
 ## Before you start
 - Create your own secret files guided from the examples.
+- Before trying it out — whether in production or locally on k8s — run npx prisma db push for both backend and notification_service, and seed the backend's database as well. When pushing/seeding against production, make sure to set the DATABASE_URL env variable to point at production first (e.g. set DATABASE_URL=<production_url> on Windows, or export DATABASE_URL=<production_url> on macOS/Linux) before running the push/seed commands — otherwise they'll run against your local database instead.
 - The app may run a little slow — free up your device for smoother testing.
 - Some emails may land in spam — this project uses a free SendGrid Single Sender
   (not a purchased/verified domain), so spam filtering is more aggressive than usual

@@ -16,7 +16,7 @@ const getComments= async(req, res)=>{
 
         return res.status(200).json(formatted);
     }catch(error){
-        log('error', 'Fetch comments error', {errorMessage: err?.message ?? String(err)});
+        log('error', 'Fetch comments error', {errorMessage: error?.message ?? String(error)});
         return res.status(500).json({error:'An error occurred while fetching comments'})
     }
 };
@@ -85,7 +85,7 @@ const getReviewStats=async(req, res)=>{
 
         return res.status(200).json(formatted);
     }catch(error){
-        log ('error', 'Fetch review stats error', {errorMessage: err?.message ?? String(err)});
+        log ('error', 'Fetch review stats error', {errorMessage: error?.message ?? String(error)});
         return res.status(500).json({error: 'An error occurred while fetching review stats'})
     }
 }
