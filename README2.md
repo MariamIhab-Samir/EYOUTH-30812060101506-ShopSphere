@@ -5,7 +5,7 @@
 - The app may run a little slow — free up your device for smoother testing
 - Some emails may land in spam — this project uses a free SendGrid Single Sender
   (not a purchased/verified domain), so spam filtering is more aggressive than usual
-  Check your spam folder
+  Check your spam folder and report as not spam so that the product images may appear
 - Seeded products (for local launches for the app)/users are available, plus a few unused product images —
   add the unused images for new products as new products (they'll upload to production Supabase Storage with the production url along the local seeded ones) and
   sign up fresh test users to try the notification flow end-to-end
